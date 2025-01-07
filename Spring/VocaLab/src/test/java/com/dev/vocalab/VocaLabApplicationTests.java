@@ -1,13 +1,13 @@
-package com.vocalab.www;
+package com.dev.vocalab;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class VocalabApplicationTests {
+class VocaLabApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
