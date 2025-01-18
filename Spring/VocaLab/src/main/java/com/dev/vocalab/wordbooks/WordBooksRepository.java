@@ -6,14 +6,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface WordBookRepository extends JpaRepository<WordBookEntity, Integer> {
+public interface WordBooksRepository extends JpaRepository<WordBooksEntity, Integer> {
 
     // 사용자별 WordBook 조회
-    List<WordBookEntity> findByUserId(String userId);
+    List<WordBooksEntity> findByUserId(String userId);
 
     // 북마크된 WordBook 조회
-    List<WordBookEntity> findByBookmarkTrue();
+    List<WordBooksEntity> findByBookmarkTrue();
 
     // 제목으로 WordBook 검색
-    List<WordBookEntity> findByWordBookTitleContainingIgnoreCase(String wordBookTitle);
+    List<WordBooksEntity> findByWordBookTitleContainingIgnoreCase(String wordBookTitle);
 }

@@ -1,7 +1,7 @@
-package com.dev.vocalab.user;
+package com.dev.vocalab.users;
 
 import com.dev.vocalab.board.BoardEntity;
-import com.dev.vocalab.files.FileEntity;
+import com.dev.vocalab.files.FilesEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,16 +17,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class UserEntity {
+public class UsersEntity {
 
     @Id
-    @Column(name = "userId", nullable = false, length = 100)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userNo", nullable = false)
+    private Long userNo;
+
+    @Column(name = "userId", nullable = false, length = 100, unique = true)
     private String userId;
 
     @Column(name = "userName", nullable = false, length = 100)
     private String userName;
 
-    @Column(name = "userPassword", nullable = false, length = 255)
+    @Column(name = "userPassword")
     private String userPassword;
 
     @Column(name = "userNickname", nullable = false, length = 100, unique = true)
@@ -76,5 +80,5 @@ public class UserEntity {
     private List<BoardEntity> boards = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileEntity> files = new ArrayList<>();
+    private List<FilesEntity> files = new ArrayList<>();
 }

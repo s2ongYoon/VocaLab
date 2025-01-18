@@ -1,6 +1,6 @@
 package com.dev.vocalab.files;
 
-import com.dev.vocalab.user.UserEntity;
+import com.dev.vocalab.users.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileEntity {
+public class FilesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fileId")
@@ -40,10 +40,10 @@ public class FileEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false)
-    private UserEntity user;
+    private UsersEntity user;
 
     public enum Category {
-        BOARD, COMPILE, ESSAY, NONE, PROFILE, TEST, TESTRECORD, WORD
+        BOARD, COMPILE, ESSAY, NONE, PROFILE, TEST, TESTRECORD, WORD, COMPILERESULT
     }
 
     public enum FileType {

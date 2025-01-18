@@ -1,13 +1,10 @@
 package com.dev.vocalab.board;
 
-import com.dev.vocalab.files.FileEntity;
-import com.dev.vocalab.files.FileRepository;
-import com.dev.vocalab.files.FileService;
-import com.dev.vocalab.user.UserEntity;
-import com.dev.vocalab.user.UserRepository;
+import com.dev.vocalab.files.FilesRepository;
+import com.dev.vocalab.files.FilesService;
+import com.dev.vocalab.users.UsersEntity;
+import com.dev.vocalab.users.UsersRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.json.simple.JSONObject;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -32,11 +27,11 @@ import java.util.Optional;
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
-    private final FileService fileService;
-    private final UserRepository userRepository;
+    private final FilesService filesService;
+    private final UsersRepository usersRepository;
     private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
     private final BoardRepository boardRepository;
-    private final FileRepository fileRepository;
+    private final FilesRepository filesRepository;
 
     /*
     페이지로 이동되는 메서드들
@@ -75,7 +70,7 @@ public class BoardController {
 
     @GetMapping("/Write")
     public String write() {
-        fileService.deleteFolder(realPath + "/board/temp/");
+        filesService.deleteFolder(realPath + "/board/temp/");
         return "board/boardWrite";
     }
 
@@ -99,9 +94,9 @@ public class BoardController {
         BoardEntity board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         String tempPath = realPath + "/board/temp/";
-        fileService.deleteFolder(tempPath);
+        filesService.deleteFolder(tempPath);
         String originPath = realPath + "/board/" + board.getBoardId() + "/";
-        fileService.copyFiles(originPath, tempPath);
+        filesService.copyFiles(originPath, tempPath);
         board.setContent(board.getContent().replaceAll("/" + board.getBoardId() + "/", "/temp/"));
         model.addAttribute("row", board);
         return "board/boardEdit";
@@ -135,7 +130,7 @@ public class BoardController {
                                @RequestParam(required = false) MultipartFile thumbnail,
                                Integer parentId) {
         String testUserId = "testAdmin";
-        UserEntity user = userRepository.findById(testUserId)
+        UsersEntity user = usersRepository.findById(testUserId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         if (parentId != null) {
             BoardEntity parentBoard = boardRepository.findById(parentId)
@@ -156,7 +151,7 @@ public class BoardController {
                 .build();
 
         BoardEntity savedBoard = boardService.savePost(board, null, null);
-        fileService.handleBoardFileUpload(savedBoard.getBoardId(), thumbnail, testUserId);
+        filesService.handleBoardFileUpload(savedBoard.getBoardId(), thumbnail, testUserId);
         return "redirect:/CS/Notice";
     }
 
@@ -170,7 +165,7 @@ public class BoardController {
                               @RequestParam(required = false) MultipartFile thumbnail) {
         BoardEntity board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        fileService.handleBoardFileUpdate(boardId, content, thumbnail, "testAdmin");
+        filesService.handleBoardFileUpdate(boardId, content, thumbnail, "testAdmin");
         board.setTitle(title);
         board.setContent(content.replaceAll("/temp/", "/" + boardId + "/"));
         board.setCategory(BoardEntity.Category.valueOf(category));
@@ -193,14 +188,14 @@ public class BoardController {
         // 답변글이 있다면 먼저 삭제
         if (replyBoard.isPresent()) {
             Integer replyBoardId = replyBoard.get().getBoardId();
-            fileService.deleteAllBoardFiles(replyBoardId);
-            fileService.deleteFolder(realPath + "/board/" + replyBoardId);
+            filesService.deleteAllBoardFiles(replyBoardId);
+            filesService.deleteFolder(realPath + "/board/" + replyBoardId);
             boardRepository.delete(replyBoard.get());
         }
 
         // 원본 게시글 삭제
         boardService.deleteBoard(boardId);
-        fileService.deleteFolder(realPath + "/board/" + boardId);
+        filesService.deleteFolder(realPath + "/board/" + boardId);
 
         // 카테고리 값 변환
         String redirectCategory = category.equals("FAQ") ?
@@ -251,7 +246,7 @@ public class BoardController {
     public String uploadSummernoteImageFile(@RequestParam("file") MultipartFile multipartFile) {
         log.info("이미지 업로드 요청: {}", multipartFile.getOriginalFilename());
         String tempPath = realPath + "/board/temp/";
-        return fileService.uploadFile(multipartFile, tempPath).toString();
+        return filesService.uploadFile(multipartFile, tempPath).toString();
     }
 
 }

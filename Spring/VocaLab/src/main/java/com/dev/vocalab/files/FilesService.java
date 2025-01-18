@@ -21,13 +21,13 @@ import java.util.UUID;
 @Service
 @Slf4j
 @Transactional
-public class FileService {
-    private final FileRepository fileRepository;
+public class FilesService {
+    private final FilesRepository filesRepository;
     private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
 
     @Autowired
-    public FileService(FileRepository fileRepository) {
-        this.fileRepository = fileRepository;
+    public FilesService(FilesRepository filesRepository) {
+        this.filesRepository = filesRepository;
     }
 
     // 파일 업로드 처리 - Summernote에서 호출
@@ -109,8 +109,8 @@ public class FileService {
     // 게시글 관련 모든 파일 삭제
     @Transactional
     public void deleteAllBoardFiles(Integer boardId) {
-        List<FileEntity> files = fileRepository.findByTableIdAndCategory(boardId, FileEntity.Category.BOARD);
-        fileRepository.deleteAll(files);
+        List<FilesEntity> files = filesRepository.findByTableIdAndCategory(boardId, FilesEntity.Category.BOARD);
+        filesRepository.deleteAll(files);
     }
 
     // 더미 파일 삭제 (본문에 포함되지 않은 파일들)
@@ -217,10 +217,10 @@ public class FileService {
 
         try {
             // 1. 기존 파일 엔티티들 삭제
-            fileRepository.deleteByTableIdAndCategory(boardId, FileEntity.Category.BOARD);
+            filesRepository.deleteByTableIdAndCategory(boardId, FilesEntity.Category.BOARD);
 
             // 2. DB 변경사항을 즉시 반영
-            fileRepository.flush();
+            filesRepository.flush();
 
             // 3. 파일 시스템 작업 수행
             removeDummyFiles(tempPath, content);
@@ -235,15 +235,15 @@ public class FileService {
                 for (File file : files) {
                     if (file.isFile() && (thumbnailFilename == null ||
                             !file.getName().equals(thumbnailFilename))) {
-                        FileEntity fileEntity = FileEntity.builder()
-                                .category(FileEntity.Category.BOARD)
+                        FilesEntity filesEntity = FilesEntity.builder()
+                                .category(FilesEntity.Category.BOARD)
                                 .filePath("/images/upload/board/" + boardId + "/" + file.getName())
-                                .fileType(FileEntity.FileType.IMAGE)
+                                .fileType(FilesEntity.FileType.IMAGE)
                                 .uploadedAt(LocalDateTime.now())
                                 .tableId(boardId)
                                 .userId(userId)
                                 .build();
-                        fileRepository.saveAndFlush(fileEntity);
+                        filesRepository.saveAndFlush(filesEntity);
                     }
                 }
             }
@@ -263,16 +263,16 @@ public class FileService {
             for (File file : files) {
                 if (file.isFile() && (thumbnailFilename == null ||
                         !file.getName().equals(thumbnailFilename))) {
-                    FileEntity fileEntity = FileEntity.builder()
-                            .category(FileEntity.Category.BOARD)
+                    FilesEntity filesEntity = FilesEntity.builder()
+                            .category(FilesEntity.Category.BOARD)
                             .filePath("/images/upload/board/" + boardId + "/" + file.getName())
-                            .fileType(FileEntity.FileType.IMAGE)
+                            .fileType(FilesEntity.FileType.IMAGE)
                             .uploadedAt(LocalDateTime.now())
                             .tableId(boardId)
                             .userId(userId)
                             .build();
-                    fileRepository.save(fileEntity);
-                    log.info("Created file entity: {}", fileEntity.getFilePath());
+                    filesRepository.save(filesEntity);
+                    log.info("Created file entity: {}", filesEntity.getFilePath());
                 }
             }
         }

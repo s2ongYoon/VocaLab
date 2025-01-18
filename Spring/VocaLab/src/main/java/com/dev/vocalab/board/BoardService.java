@@ -1,6 +1,6 @@
 package com.dev.vocalab.board;
 
-import com.dev.vocalab.files.FileService;
+import com.dev.vocalab.files.FilesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,12 +15,12 @@ import java.util.Optional;
 @Slf4j
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final FileService fileService;
+    private final FilesService filesService;
 
     @Autowired
-    public BoardService(BoardRepository boardRepository, FileService fileService) {
+    public BoardService(BoardRepository boardRepository, FilesService filesService) {
         this.boardRepository = boardRepository;
-        this.fileService = fileService;
+        this.filesService = filesService;
     }
 
     // 전체 리스트 불러오기
@@ -76,7 +76,7 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Integer boardId) {
         boardRepository.findById(boardId).ifPresent(board -> {
-            fileService.deleteAllBoardFiles(boardId);
+            filesService.deleteAllBoardFiles(boardId);
             boardRepository.delete(board);
         });
     }

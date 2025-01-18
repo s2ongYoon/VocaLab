@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 // FileRepository.java
-public interface FileRepository extends JpaRepository<FileEntity, Long> {
-    @Query("SELECT COUNT(f) > 0 FROM FileEntity f WHERE f.filePath = :filePath")
+public interface FilesRepository extends JpaRepository<FilesEntity, Long> {
+    @Query("SELECT COUNT(f) > 0 FROM FilesEntity f WHERE f.filePath = :filePath")
     boolean existsByFilePath(@Param("filePath") String filePath);
 
-    List<FileEntity> findByTableIdAndCategory(Integer tableId, FileEntity.Category category);
+    List<FilesEntity> findByTableIdAndCategory(Integer tableId, FilesEntity.Category category);
 
     @Transactional
-    void deleteByTableIdAndCategory(Integer tableId, FileEntity.Category category);
+    void deleteByTableIdAndCategory(Integer tableId, FilesEntity.Category category);
 }

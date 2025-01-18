@@ -1,12 +1,10 @@
 package com.dev.vocalab.board;
 
-import com.dev.vocalab.files.FileEntity;
-import com.dev.vocalab.user.UserEntity;
+import com.dev.vocalab.users.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "Board")
@@ -48,14 +46,14 @@ public class BoardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
-    private UserEntity user;
+    private UsersEntity user;
 
     // Getter & Setter
-    public UserEntity getUser() {
+    public UsersEntity getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(UsersEntity user) {
         this.user = user;
     }
 
