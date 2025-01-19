@@ -6,12 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/WordBook")
 @Controller
@@ -30,6 +28,17 @@ public class WordBooksController {
         try {
             // Fetch the word list using the WordBooksService
             return wordBooksService.readWordBook(wordBookId);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load word book data.", e);
+        }
+    }
+    @PostMapping("/WordData/remove")
+    @ResponseBody
+    public void deleteWords(@RequestBody Map<String, List<String>> deleteWordList, @RequestParam("wordBookId") Integer wordBookId) {
+        try {
+            List<String> words = deleteWordList.get("words");
+            System.out.println("Received words: " + words);
+            wordBooksService.deleteWord(wordBookId,words);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load word book data.", e);
         }

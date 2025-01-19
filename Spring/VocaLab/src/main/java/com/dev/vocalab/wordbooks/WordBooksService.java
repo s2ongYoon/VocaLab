@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -62,4 +63,40 @@ public class WordBooksService {
         }
         return wordList;
     }
+    public void deleteWord(Integer wordBookId, List<String> deleteWordList) throws Exception{
+        Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD)
+                .stream()
+                .findFirst();
+        System.out.println("fileEntityOpt: " +fileEntityOpt);
+
+        if (fileEntityOpt.isEmpty()) {
+            throw new Exception("No file found for the given wordBookId.");
+        }
+
+        // Extract the filePath from the retrieved FilesEntity
+        String relativeFilePath = fileEntityOpt.get().getFilePath();
+        System.out.println("Relative file path: " + relativeFilePath);
+
+        // Ensure the file path is absolute
+        String baseStaticPath = staticLocations.split(",")[1].replace("file:", "");
+        String absoluteFilePath = Paths.get(baseStaticPath, relativeFilePath).toString();
+        System.out.println("Absolute file path: " + absoluteFilePath);
+
+        // Check if file exists
+        if (!Files.exists(Paths.get(absoluteFilePath))) {
+            throw new Exception("The file does not exist: " + absoluteFilePath);
+        }
+
+        // Read the CSV file
+        List<String[]> wordList = new ArrayList<>();
+        try (CSVReader csvReader = new CSVReader(new FileReader(absoluteFilePath))) {
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                wordList.add(line);
+            }
+        } catch (Exception e) {
+            throw new Exception("Failed to read the CSV file: " + absoluteFilePath, e);
+        }
+    }
+
 }

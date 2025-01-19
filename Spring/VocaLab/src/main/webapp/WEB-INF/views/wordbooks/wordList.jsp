@@ -34,6 +34,7 @@
                         <div class="search-section d-flex align-items-center gap-2">
                             <input type="text" id="searchInput" class="form-control" placeholder="단어를 검색하세요">
                             <button class="btn btn-success" id="btnCreateContent" data-bs-toggle="modal" data-bs-target="#contentModal">컨텐츠 생성</button>
+                            <button id="wordDeleteBtn" class="btn btn-danger btn-remove-word">단어 삭제</button>
                         </div>
                     </div>
                     <button id="btnRestoreModal" class="btn btn-primary restore-btn">+</button>

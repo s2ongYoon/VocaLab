@@ -2,10 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 import json
+import os 
+from dotenv import load_dotenv
 
+load_dotenv('env/api.env')  # env/api.env 파일 로드
 
+apiKey = os.getenv('gemini_api_key')
+print(f"Loaded API Key: {apiKey}")  # API 키가 제대로 로드되었는지 출력
 # Google Generative AI API 설정
-genai.configure(api_key="")
+genai.configure(api_key=apiKey)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 app = Flask(__name__)
@@ -24,6 +29,7 @@ def word_mean():
             f"{word} 을 word: {word} partofspeech:품사 mean:한국어 뜻 speech:발음기호 example:생성한 예문(예문의 뜻) (단,예문은 1개) 형태로 json 형식으로 보내시오."
         )
         response_content = response.text
+        print(response_content)
 
         # JSON 데이터 추출
         json_start = response_content.find("{")
