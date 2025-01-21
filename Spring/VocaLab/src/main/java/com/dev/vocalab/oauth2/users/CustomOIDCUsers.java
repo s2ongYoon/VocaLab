@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.Map;
 
-// 구글용 OAuth2 분리
+// 구글용 OAuth2 분리, DTO
 public class CustomOIDCUsers extends CustomOAuth2Users implements OidcUser {
 
     private final OidcUser oidcUser;
@@ -20,7 +20,7 @@ public class CustomOIDCUsers extends CustomOAuth2Users implements OidcUser {
         this.oidcUser = oidcUser;
         this.idToken = idToken;
         this.userInfo = userInfo;
-        this.setNickname(oAuth2Response.getUserName());
+        this.setUserNickname(oAuth2Response.getUserName());
     }
 
     @Override

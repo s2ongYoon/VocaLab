@@ -1,6 +1,11 @@
 package com.dev.vocalab.users;
 
+import com.dev.vocalab.oauth2.users.CustomOAuth2Users;
+import com.dev.vocalab.oauth2.users.CustomOIDCUsers;
+import com.dev.vocalab.users.details.CustomUsersDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,5 +65,46 @@ public class UsersService {
                 ("회원가입 되었습니다(userId, userName, userPassword, userNickname, userEmail, birthDate, gender): "
          + userId + " " + userName + " " + userPassword + " " +
                 userNickname  + " " + userEmail + " " + birthDate + " " + gender);
+    }
+
+    //
+    public UsersDTO getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsersDTO usersDTO = new UsersDTO();
+
+        System.out.println("Authentication: " + authentication);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+//            UsersDTO usersDTO = new UsersDTO();
+
+            System.out.println("Principal class: " + principal.getClass().getName());
+            System.out.println("Principal: " + principal);
+
+            if (principal instanceof CustomUsersDetails) {
+                CustomUsersDetails userDetails = (CustomUsersDetails) principal;
+                usersDTO.setLoginType("normal");
+                usersDTO.setUserId(userDetails.getUserId());
+                usersDTO.setUserName(userDetails.getUserName());
+                usersDTO.setUserNickname(userDetails.getUserNickname());
+                return usersDTO;
+            } else if (principal instanceof CustomOAuth2Users) {
+                CustomOAuth2Users oauth2User = (CustomOAuth2Users) principal;
+                usersDTO.setLoginType("oauth2");
+                usersDTO.setUserId(oauth2User.getUserId());
+                usersDTO.setUserName(oauth2User.getUserName());
+                usersDTO.setUserNickname(oauth2User.getUserNickname());
+                return usersDTO;
+            } else if (principal instanceof CustomOIDCUsers) {
+                CustomOIDCUsers oidcUser = (CustomOIDCUsers) principal;
+                usersDTO.setLoginType("oidc");
+                usersDTO.setUserId(oidcUser.getUserId());
+                usersDTO.setUserName(oidcUser.getUserName());
+                usersDTO.setUserNickname(oidcUser.getUserNickname());
+                return usersDTO;
+            }
+        }
+
+        return null;
     }
 }

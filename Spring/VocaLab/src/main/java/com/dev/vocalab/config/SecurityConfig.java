@@ -7,6 +7,7 @@ import com.dev.vocalab.oauth2.users.CustomOIDCUsersService;
 import com.dev.vocalab.users.UsersEntity;
 import com.dev.vocalab.users.UsersRepository;
 import com.dev.vocalab.users.details.CustomUsersDetails;
+import com.dev.vocalab.users.details.CustomUsersDetailsService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +39,14 @@ public class SecurityConfig {
 
     private final CustomOAuth2UsersService customOAuth2UsersService;
     private final CustomOIDCUsersService customOIDCUsersService;
+    private final CustomUsersDetailsService customUsersDetailsService;
     private final UsersRepository usersRepository;
 
-    public SecurityConfig(CustomOAuth2UsersService customOAuth2UsersService, CustomOIDCUsersService customOIDCUsersService, UsersRepository usersRepository) {
+    public SecurityConfig(CustomOAuth2UsersService customOAuth2UsersService, CustomOIDCUsersService customOIDCUsersService, CustomUsersDetailsService customUsersDetailsService, UsersRepository usersRepository) {
+        System.out.println("SecurityConfig 생성자 - customUsersDetailsService : " + customUsersDetailsService);
         System.out.println("SecurityConfig 생성자 - customOAuth2UsersService: " + customOAuth2UsersService);
         System.out.println("SecurityConfig 생성자 - customOIDCUsersService: " + customOIDCUsersService);
+        this.customUsersDetailsService = customUsersDetailsService;
         this.customOIDCUsersService = customOIDCUsersService;
         this.customOAuth2UsersService = customOAuth2UsersService;
         this.usersRepository = usersRepository;
@@ -82,6 +86,7 @@ public class SecurityConfig {
                 })
                 //.failureUrl("/login?error") // 얘는 간단한 리다이렉트만
                 .permitAll());
+        http.userDetailsService(customUsersDetailsService).csrf(csrf -> csrf.disable());
 
         http.httpBasic((basic) -> basic.disable());
 
@@ -103,11 +108,11 @@ public class SecurityConfig {
                             if (authentication.getPrincipal() instanceof CustomOAuth2Users) {
                                 CustomOAuth2Users oAuth2Users = (CustomOAuth2Users) authentication.getPrincipal();
                                 System.out.println("서비스명: " + oAuth2Users.getOAuth2Response().getProvider());
-                                System.out.println("Nickname: " + oAuth2Users.getNickname());
+                                System.out.println("Nickname: " + oAuth2Users.getUserNickname());
                             } else if (authentication.getPrincipal() instanceof CustomOIDCUsers) {
                                 CustomOIDCUsers oidcUsers = (CustomOIDCUsers) authentication.getPrincipal();
                                 System.out.println("OIDC 서비스명: " + oidcUsers.getOAuth2Response().getProvider());
-                                System.out.println("Nickname: " + oidcUsers.getNickname());
+                                System.out.println("Nickname: " + oidcUsers.getUserNickname());
                             } else {
                                 System.out.println("알 수 없는 인증 타입: " + authentication.getPrincipal().getClass().getName());
                             }

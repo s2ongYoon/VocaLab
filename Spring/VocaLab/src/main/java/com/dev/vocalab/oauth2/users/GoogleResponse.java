@@ -23,6 +23,11 @@ public class GoogleResponse implements OAuth2Response{
     }
 
     @Override
+    public String getUserId() {
+        return attribute.get("id").toString();
+    }
+
+    @Override
     public String getUserEmail() {
         return attribute.get("email").toString();
     }
@@ -30,6 +35,11 @@ public class GoogleResponse implements OAuth2Response{
     @Override
     public String getUserName() {
         return attribute.get("name").toString();
+    }
+
+    @Override
+    public String getUserNickname() {
+        return attribute.get("nickname").toString();
     }
 
     // 구글에서 제공하지 않을 가능성 있는 컬럼은 getOrDefault 사용

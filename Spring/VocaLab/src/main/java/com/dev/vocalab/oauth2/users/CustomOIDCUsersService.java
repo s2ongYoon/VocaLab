@@ -60,6 +60,7 @@ public class CustomOIDCUsersService implements OAuth2UserService<OidcUserRequest
     }
 
 
+    // Oidc에서 왜 OAuthResponse를 받냐? => DTO에서 상속을 받기 때문
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         System.out.println("=== Google OIDC 로그인 시작 ===");
@@ -108,19 +109,23 @@ public class CustomOIDCUsersService implements OAuth2UserService<OidcUserRequest
             usersEntity.setBirthDate(birthDate);
 
             // gender 처리 - 수정된 컨버터 사용
-            int gender = convertGender("google",
-                    oAuth2Response.getGender(),
-                    oAuth2Response.getBirthYear());
+            int gender = convertGender("google", oAuth2Response.getGender(), oAuth2Response.getBirthYear());
             usersEntity.setGender(gender);
 
             existData = usersRepository.save(usersEntity);
+
+            CustomOIDCUsers customOIDCUsers = new CustomOIDCUsers(oAuth2Response, existData.getUserRole(), oidcUser,
+                    oidcUser.getIdToken(), oidcUser.getUserInfo());
+            customOIDCUsers.setUserId(oAuth2Response.getUserEmail());
+            customOIDCUsers.setUserNickname(existData.getUserNickname());
         } else {
             userRole = existData.getUserRole();
         }
 
         CustomOIDCUsers customOIDCUsers = new CustomOIDCUsers(oAuth2Response, existData.getUserRole(), oidcUser,
                 oidcUser.getIdToken(), oidcUser.getUserInfo());
-        customOIDCUsers.setNickname(existData.getUserNickname());
+        customOIDCUsers.setUserId(oAuth2Response.getUserEmail());  // 새로 생성된 userId 설정
+        customOIDCUsers.setUserNickname(existData.getUserNickname());
 
         return customOIDCUsers;
     }

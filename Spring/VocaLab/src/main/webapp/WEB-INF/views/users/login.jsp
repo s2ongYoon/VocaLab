@@ -17,35 +17,33 @@
 
         <sec:authorize access="isAuthenticated()">
             <span>
-                <%-- Principal 객체를 변수로 저장 --%>
-                <sec:authentication property="principal" var="user" />
-
-                <%-- OAuth2 로그인인 경우 --%>
-                <c:if test="${user.attributes != null}">
-                    <c:choose>
-                        <c:when test="${user.attributes.containsKey('name')}">
-                            ${user.attributes.name}님 <%-- 구글 --%>
-                        </c:when>
-                        <c:when test="${user.attributes.containsKey('response')}">
-                            ${user.attributes.response.name}님 <%-- 네이버 --%>
-                        </c:when>
-                    </c:choose>
-                </c:if>
-
-<%-- 일반 로그인인 경우--%>
-<%--  Spring Security의 기본 UserDetails 구현에서는 username이 userId에 매핑--%>
-                <c:if test="${user.attributes == null}">
-                    <sec:authentication property="principal.username" />님
-                </c:if>
+                <%-- 컨트롤러에서 전달받은 loginType에 따라 표시 --%>
+                <c:choose>
+                    <c:when test="${loginType eq 'normal'}">
+                        ${userName}님 (${nickname})
+                    </c:when>
+                    <c:when test="${loginType eq 'oauth2'}">
+                        ${nickname}님
+                    </c:when>
+                    <c:when test="${loginType eq 'oidc'}">
+                        ${nickname}님
+                    </c:when>
+                </c:choose>
 
                 <a href="/logout">로그아웃</a>
             </span>
-            <pre>
-                <!-- 디버깅용 출력 -->
-                Principal Type: ${user.getClass().name}<br>
-                Is OAuth2: ${user.attributes != null}<br>
-                Properties: ${user}
-            </pre>
+
+            <%-- 디버깅용 정보 (필요시 주석 해제) --%>
+            <%--
+            <div style="display: none">
+                로그인 타입: ${loginType}<br/>
+                <c:if test="${loginType eq 'normal'}">
+                    사용자 ID: ${userId}<br/>
+                    사용자 이름: ${userName}<br/>
+                    닉네임: ${nickname}<br/>
+                </c:if>
+            </div>
+            --%>
         </sec:authorize>
 
         <sec:authorize access="!isAuthenticated()">

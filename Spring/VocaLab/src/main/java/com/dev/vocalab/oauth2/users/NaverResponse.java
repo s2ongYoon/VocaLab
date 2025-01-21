@@ -22,6 +22,11 @@ public class NaverResponse implements OAuth2Response {
     }
 
     @Override
+    public String getUserId() {
+        return (String) attribute.get("id");
+    }
+
+    @Override
     public String getUserEmail() {
         return attribute.get("email").toString();
     }
@@ -29,6 +34,11 @@ public class NaverResponse implements OAuth2Response {
     @Override
     public String getUserName() {
         return attribute.get("name").toString();
+    }
+
+    @Override
+    public String getUserNickname() {
+        return attribute.get("nickname").toString();
     }
 
     @Override

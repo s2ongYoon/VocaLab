@@ -14,38 +14,32 @@
 
     <sec:authorize access="isAuthenticated()">
         <span>
-            <sec:authentication property="principal" var="user" />
-
-
-            <%-- 사용자 정보 표시 --%>
-            <c:set var="principal" value="${sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal}" />
-
-            <%-- 사용자 이름 표시 --%>
+            <%-- 컨트롤러에서 전달받은 loginType에 따라 표시 --%>
             <c:choose>
-                <%-- 일반 로그인 --%>
-                <c:when test="${principal['class'].simpleName eq 'CustomUsersDetails'}">
-                    님
+                <c:when test="${loginType eq 'normal'}">
+                    ${userId}님 (${userNickname})
                 </c:when>
-                <%-- OAuth2 로그인 (구글) --%>
-                <c:when test="${principal['class'].simpleName eq 'CustomOIDCUsers'}">
-                    ${principal.nickname}님
+                <c:when test="${loginType eq 'oauth2'}">
+                    ${userNickname}님
                 </c:when>
-                <%-- OAuth2 로그인 (네이버) --%>
-                <c:when test="${principal['class'].simpleName eq 'CustomOAuth2Users'}">
-                    ${principal.nickname}님
+                <c:when test="${loginType eq 'oidc'}">
+                    ${userNickname}님
                 </c:when>
             </c:choose>
 
-
             <a href="/logout">로그아웃</a>
-
         </span>
-        <pre>
-            <!-- 디버깅용 출력 -->
-            Principal Type: ${user.getClass().name}<br>
-            Is OAuth2: ${user.attributes != null}<br>
-            Properties: ${user}
-        </pre>
+
+
+        <%-- 디버깅용 정보 (필요시 주석 해제)--%>
+
+        <div style="display: none">
+            로그인 타입: ${loginType}<br>
+            사용자 ID: ${userId}<br>
+            사용자 이름: ${userName}<br>
+            닉네임: ${userNickname}<br>
+        </div>
+
     </sec:authorize>
 
     <sec:authorize access="!isAuthenticated()">

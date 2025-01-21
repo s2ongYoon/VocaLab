@@ -69,11 +69,13 @@ public class CustomOAuth2UsersService extends DefaultOAuth2UserService implement
 
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes()); // 네이버 방식대로 oAuth2Response 바구니에 getAttributes로 데이터를 꺼내 넣음
             System.out.println("Naver OAuth attributes: " + oAuth2User.getAttributes());
-        } else if (registrationId.equals("google")) {
-
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes()); // 구글 방식대로 oAuth2Response 바구니에 getAttributes로 데이터를 꺼내 넣음
-            System.out.println("Google OAuth attributes: " + oAuth2User.getAttributes());
-        } else {
+        }
+//        else if (registrationId.equals("google")) {
+//
+//            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes()); // 구글 방식대로 oAuth2Response 바구니에 getAttributes로 데이터를 꺼내 넣음
+//            System.out.println("Google OAuth attributes: " + oAuth2User.getAttributes());
+//        }
+        else {
             System.out.println("지원하지 않는 소셜 로그인입니다.");
             return null;
         }
@@ -113,8 +115,7 @@ public class CustomOAuth2UsersService extends DefaultOAuth2UserService implement
             usersEntity.setUserEmail(oAuth2Response.getUserEmail());
 
             // 소셜 로그인 제공자 설정
-            UsersEntity.UserSocial userSocial =
-                    registrationId.equals("naver") ? UsersEntity.UserSocial.NAVER : UsersEntity.UserSocial.GOOGLE;
+            UsersEntity.UserSocial userSocial = UsersEntity.UserSocial.NAVER;
             usersEntity.setUserSocial(userSocial);
 
             usersEntity.setUserRole(userRole);
@@ -135,17 +136,24 @@ public class CustomOAuth2UsersService extends DefaultOAuth2UserService implement
 
             existData = usersRepository.save(usersEntity);
 
+            CustomOAuth2Users customOAuth2Users = new CustomOAuth2Users(oAuth2Response, existData.getUserRole());
+            customOAuth2Users.setUserId(oAuth2Response.getUserEmail());  // 새로 생성된 userId 설정
+            customOAuth2Users.setUserNickname(existData.getUserNickname());
+
+            return customOAuth2Users;
+
         } else { // 이미 존재하는
             userRole = existData.getUserRole();
         }
 
-        CustomOAuth2Users customOAuth2User = new CustomOAuth2Users(oAuth2Response, existData.getUserRole());
+        CustomOAuth2Users customOAuth2Users = new CustomOAuth2Users(oAuth2Response, existData.getUserRole());
+        customOAuth2Users.setUserId(existData.getUserId());
         String nickname = existData.getUserNickname();
         System.out.println("Setting nickname for user: " + nickname); // 디버깅 로그
-        customOAuth2User.setNickname(nickname); // 닉네임 설정
-        System.out.println("Nickname after setting: " + customOAuth2User.getNickname()); // 확인 로그
+        customOAuth2Users.setUserNickname(nickname); // 닉네임 설정
+        System.out.println("Nickname after setting: " + customOAuth2Users.getUserNickname()); // 확인 로그
 
-        return customOAuth2User;
+        return customOAuth2Users;
     }
 
 }
