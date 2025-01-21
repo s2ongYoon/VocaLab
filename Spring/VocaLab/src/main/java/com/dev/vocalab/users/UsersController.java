@@ -2,6 +2,7 @@ package com.dev.vocalab.users;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +54,19 @@ public class UsersController {
     }
 
     @GetMapping("/main")
-    public String mainPage() {
+    public String mainPage(@AuthenticationPrincipal Object principal, Model model) {
+//        // 로그인 상태 확인
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return "redirect:/login";
+//        }
+        model.addAttribute("principal", principal);
+        model.addAttribute("users", usersRepository.findAll());
         return "board/csmain";
+    }
+
+    // 로그아웃 테스트용
+    @GetMapping("/test")
+    public String testPage(Authentication authentication) {
+        return "users/test";
     }
 }

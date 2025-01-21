@@ -2,21 +2,33 @@ package com.dev.vocalab.config;
 
 import com.dev.vocalab.oauth2.users.CustomOAuth2Users;
 import com.dev.vocalab.oauth2.users.CustomOAuth2UsersService;
+import com.dev.vocalab.oauth2.users.CustomOIDCUsers;
+import com.dev.vocalab.oauth2.users.CustomOIDCUsersService;
 import com.dev.vocalab.users.UsersEntity;
 import com.dev.vocalab.users.UsersRepository;
 import com.dev.vocalab.users.details.CustomUsersDetails;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,24 +37,50 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomOAuth2UsersService customOAuth2UsersService;
+    private final CustomOIDCUsersService customOIDCUsersService;
     private final UsersRepository usersRepository;
 
-    public SecurityConfig(CustomOAuth2UsersService customOAuth2UsersService, UsersRepository usersRepository) {
+    public SecurityConfig(CustomOAuth2UsersService customOAuth2UsersService, CustomOIDCUsersService customOIDCUsersService, UsersRepository usersRepository) {
+        System.out.println("SecurityConfig 생성자 - customOAuth2UsersService: " + customOAuth2UsersService);
+        System.out.println("SecurityConfig 생성자 - customOIDCUsersService: " + customOIDCUsersService);
+        this.customOIDCUsersService = customOIDCUsersService;
         this.customOAuth2UsersService = customOAuth2UsersService;
         this.usersRepository = usersRepository;
     }
 
+    @PostConstruct
+    public void init() {
+        System.out.println("SecurityConfig 초기화 완료");
+        System.out.println("CustomOAuth2UsersService 상태: " + customOAuth2UsersService);
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("SecurityConfig 초기화 - customOAuth2UsersService: " + customOAuth2UsersService);
         http.csrf((csrf) -> csrf.disable());
 
         http.formLogin(form -> form
                 .loginPage("/login")                // 로그인 페이지 URL
-                .loginProcessingUrl("/login-proc")  // 로그인 처리 URL
+                .loginProcessingUrl("/login-process")  // 로그인 처리 URL
                 .usernameParameter("userId")        // 아이디 파라미터명
                 .passwordParameter("userPassword")   // 비밀번호 파라미터명
-                .defaultSuccessUrl("/main")         // 로그인 성공 시 이동
-                .failureUrl("/login?error")         // 로그인 실패 시 이동
+                .defaultSuccessUrl("/main", true)         // 로그인 성공 시 이동
+                .successHandler((request, response, authentication) -> {
+                    // 로그인 성공 로깅
+                    System.out.println("일반 로그인 성공: " + authentication.getName());
+                    if (authentication.getPrincipal() instanceof CustomUsersDetails) {
+                        CustomUsersDetails userDetails = (CustomUsersDetails) authentication.getPrincipal();
+                        System.out.println("로그인 사용자 정보: " + userDetails.getUsername());
+                    }
+                    response.sendRedirect("/main");
+                })
+                // 로직
+                .failureHandler((request, response, exception) -> {
+                    // 로그인 실패 시 처리
+                    System.out.println("로그인 실패: " + exception.getMessage());
+                    response.sendRedirect("/login?error=true&message=" + exception.getMessage());
+                })
+                //.failureUrl("/login?error") // 얘는 간단한 리다이렉트만
                 .permitAll());
 
         http.httpBasic((basic) -> basic.disable());
@@ -51,14 +89,82 @@ public class SecurityConfig {
                 oauth2.loginPage("/login")
 //                        .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
 //                        .authorizedClientService(customOAuth2AuthorizedClientService.oAuth2AuthorizedClientService(jdbcTemplate, customClientRegistrationRepo.clientRegistrationRepository()))
-                       .userInfoEndpoint((userInfoEndpointConfig) ->
-                               userInfoEndpointConfig.userService(customOAuth2UsersService)));
+                        .userInfoEndpoint(userInfo -> {
+                            System.out.println("OAuth2 로그인 - 사용자 서비스 진입");
+                            userInfo.userService(customOAuth2UsersService) // OAuth2 서비스(네이버)
+                                    .oidcUserService(customOIDCUsersService); // OIDC 서비스(구글)
+                            //userInfo.oidcUserService(customOAuth2UsersService::loadOidcUser);
+                        })
+                        .successHandler((request, response, authentication) -> {
+                            System.out.println("OAuth2 로그인 성공: " + authentication.getName());
+                            System.out.println("Authentication details: " + authentication.getDetails());
+
+                            // Principal에서 nickname 확인
+                            if (authentication.getPrincipal() instanceof CustomOAuth2Users) {
+                                CustomOAuth2Users oAuth2Users = (CustomOAuth2Users) authentication.getPrincipal();
+                                System.out.println("서비스명: " + oAuth2Users.getOAuth2Response().getProvider());
+                                System.out.println("Nickname: " + oAuth2Users.getNickname());
+                            } else if (authentication.getPrincipal() instanceof CustomOIDCUsers) {
+                                CustomOIDCUsers oidcUsers = (CustomOIDCUsers) authentication.getPrincipal();
+                                System.out.println("OIDC 서비스명: " + oidcUsers.getOAuth2Response().getProvider());
+                                System.out.println("Nickname: " + oidcUsers.getNickname());
+                            } else {
+                                System.out.println("알 수 없는 인증 타입: " + authentication.getPrincipal().getClass().getName());
+                            }
+
+                            response.sendRedirect("/main");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println("OAuth2 로그인 실패: " + exception.getMessage());
+                            exception.printStackTrace();
+                            response.sendRedirect("/login?error=oauth2");
+                        })
+        );
+
+
+// true를 추가하여 항상 이 URL로 리다이렉트);
 
         http.authorizeHttpRequests((authorize) ->
                 authorize.requestMatchers("/**").permitAll()
         );
 
+        http.logout(logout -> logout
+                .logoutSuccessHandler(new CustomLogoutSuccessHandler()) // 커스텀 로그아웃 핸들러 사용
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
+
         return http.build();
+    }
+
+    // 커스텀 로그아웃 성공 핸들러
+    private static class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+        @Override
+        public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
+                                    Authentication authentication) throws IOException, ServletException {
+            // OAuth2 로그인 사용자인 경우
+            if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
+                String registrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+
+                // OAuth2 제공자별 로그아웃 URL
+//                String logoutUrl = switch (registrationId) {
+//                    case "google" -> "https://accounts.google.com/Logout";
+//                    case "naver" -> "https://nid.naver.com/nidlogin.logout";
+//                    default -> "/login";
+//                };
+
+                // 세션 무효화
+                request.getSession().invalidate();
+
+                // OAuth2 제공자의 로그아웃 페이지로 리다이렉트
+//                response.sendRedirect(logoutUrl);
+                response.sendRedirect("/login");
+            } else {
+                // 일반 로그인 사용자인 경우
+                response.sendRedirect("/login");
+            }
+        }
     }
 
     // 해싱 DI

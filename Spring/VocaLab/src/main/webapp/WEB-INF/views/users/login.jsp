@@ -32,8 +32,8 @@
                     </c:choose>
                 </c:if>
 
-                <%-- 일반 로그인인 경우 --%>
-                <%-- Spring Security의 기본 UserDetails 구현에서는 username이 userId에 매핑--%>
+<%-- 일반 로그인인 경우--%>
+<%--  Spring Security의 기본 UserDetails 구현에서는 username이 userId에 매핑--%>
                 <c:if test="${user.attributes == null}">
                     <sec:authentication property="principal.username" />님
                 </c:if>
@@ -42,8 +42,8 @@
             </span>
             <pre>
                 <!-- 디버깅용 출력 -->
-                Principal Type: ${user.getClass().name}
-                Is OAuth2: ${user.attributes != null}
+                Principal Type: ${user.getClass().name}<br>
+                Is OAuth2: ${user.attributes != null}<br>
                 Properties: ${user}
             </pre>
         </sec:authorize>
@@ -60,9 +60,10 @@
         <h4>아이디나 비밀번호가 일치하지 않습니다.</h4>
     </c:if>
 
-    <form action="/login-proc" method="POST">
-        <input name="userId" required><br>
-        <input name="userPassword" type="password" required><br>
+    <form action="/login-process" method="POST">
+        <input type="text" name="userId" placeholder="아이디"><br>
+        <input type="password" name="userPassword" placeholder="비밀번호"><br>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /><br>
         <button type="submit">로그인</button>
         <a href="${pageContext.request.contextPath}/register" class="btn">회원가입</a>
     </form>
@@ -79,9 +80,46 @@
             네이버 로그인
         </a>
     </div>
-        <button type="submit">로그인</button>
-        <a href="${pageContext.request.contextPath}/register" class="btn">회원가입</a>
-        <%-- <button class="btn" onclick="location.href='/signup'">회원가입</button> --%>
-    </form>
 </body>
 </html>
+
+
+
+<%--        <sec:authorize access="isAuthenticated()">--%>
+<%--            <span>--%>
+<%--                &lt;%&ndash; Principal 객체를 변수로 저장 &ndash;%&gt;--%>
+<%--                <sec:authentication property="principal" var="user" />--%>
+
+<%--                &lt;%&ndash; OAuth2 로그인인 경우 &ndash;%&gt;--%>
+<%--                <c:if test="${user.attributes != null}">--%>
+<%--                    <c:choose>--%>
+<%--                        <c:when test="${user.attributes.containsKey('name')}">--%>
+<%--                            ${user.attributes.name}님 &lt;%&ndash; 구글 &ndash;%&gt;--%>
+<%--                        </c:when>--%>
+<%--                        <c:when test="${user.attributes.containsKey('response')}">--%>
+<%--                            ${user.attributes.response.name}님 &lt;%&ndash; 네이버 &ndash;%&gt;--%>
+<%--                        </c:when>--%>
+<%--                    </c:choose>--%>
+<%--                </c:if>--%>
+
+<%--                &lt;%&ndash; 일반 로그인인 경우 &ndash;%&gt;--%>
+<%--                &lt;%&ndash; Spring Security의 기본 UserDetails 구현에서는 username이 userId에 매핑&ndash;%&gt;--%>
+<%--                <c:if test="${user.attributes == null}">--%>
+<%--                    <sec:authentication property="principal.username" />님--%>
+<%--                </c:if>--%>
+
+<%--                <a href="/logout">로그아웃</a>--%>
+<%--            </span>--%>
+<%--            <pre>--%>
+<%--                <!-- 디버깅용 출력 -->--%>
+<%--                Principal Type: ${user.getClass().name}--%>
+<%--                Is OAuth2: ${user.attributes != null}--%>
+<%--                Properties: ${user}--%>
+<%--            </pre>--%>
+<%--        </sec:authorize>--%>
+
+<%--        <sec:authorize access="!isAuthenticated()">--%>
+<%--            <span>--%>
+<%--                <a href="/login">로그인</a>--%>
+<%--            </span>--%>
+<%--        </sec:authorize>--%>

@@ -14,7 +14,7 @@ public class GoogleResponse implements OAuth2Response{
 
     @Override
     public String getProvider() {
-        return "goggle";
+        return "google";
     }
 
     @Override
@@ -32,18 +32,22 @@ public class GoogleResponse implements OAuth2Response{
         return attribute.get("name").toString();
     }
 
+    // 구글에서 제공하지 않을 가능성 있는 컬럼은 getOrDefault 사용
     @Override
     public String getGender() {
-        return attribute.get("gender").toString();
+        return attribute.getOrDefault("gender", "unknown").toString();
+        // return attribute.get("gender").toString();
     }
 
     @Override
     public String getBirthday() {
-        return attribute.get("birthday").toString();
+        return attribute.getOrDefault("birthday", "00-00").toString();
+        // return attribute.get("birthday").toString();
     }
 
     @Override
     public String getBirthYear() {
-        return attribute.get("birthYear").toString();
+        return attribute.getOrDefault("birthYear", "0000").toString();
+        // return attribute.get("birthYear").toString();
     }
 }

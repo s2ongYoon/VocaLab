@@ -18,4 +18,5 @@ public interface UsersRepository extends JpaRepository<UsersEntity, Long> {
     // OAuth2유저 판별
     UsersEntity findByUserName(String userName);
 
+    UsersEntity findByUserEmail(String email);
 }

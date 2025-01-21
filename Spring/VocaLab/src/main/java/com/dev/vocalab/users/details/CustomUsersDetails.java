@@ -42,5 +42,9 @@ public class CustomUsersDetails extends User {
         NORMAL, BANNED
     }
 
+    // OAuth2User와의 일관성을 위해 추가
+    public String getName() {
+        return this.nickname != null ? this.nickname : this.userName;
+    }
 
 }

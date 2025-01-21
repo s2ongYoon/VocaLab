@@ -1,5 +1,6 @@
 package com.dev.vocalab.users.details;
 
+import com.dev.vocalab.users.UsersEntity;
 import com.dev.vocalab.users.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,12 +23,12 @@ public class CustomUsersDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         // DB에서 userId를 가진 유저를 찾음
-        var result = usersRepository.findByUserId(userId);
+        Optional<UsersEntity> result = usersRepository.findByUserId(userId);
         if (result.isEmpty()) {
             throw new UsernameNotFoundException("존재하지 않는 사용자입니다.");
         }
 
-        var usersEntity = result.get();
+        UsersEntity usersEntity = result.get();
 
         // 권한 설정
         List<GrantedAuthority> authorities = new ArrayList<>();
