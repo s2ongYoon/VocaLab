@@ -1,5 +1,8 @@
 package com.dev.vocalab.oauth2.users;
 
+import lombok.Getter;
+import lombok.Setter;
+
 // 데이터를 받을 수 있는 바구니
 public interface OAuth2Response {
 

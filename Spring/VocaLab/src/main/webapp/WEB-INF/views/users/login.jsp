@@ -34,6 +34,7 @@
             </span>
 
             <%-- 디버깅용 정보 (필요시 주석 해제) --%>
+            <%--
             <div style="display: none">
                 로그인 타입: ${loginType}<br/>
                 <c:if test="${loginType eq 'normal'}">
@@ -42,6 +43,7 @@
                     닉네임: ${nickname}<br/>
                 </c:if>
             </div>
+            --%>
         </sec:authorize>
 
         <sec:authorize access="!isAuthenticated()">
