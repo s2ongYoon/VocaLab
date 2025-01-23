@@ -139,29 +139,31 @@
 </head>
 <body>
 <div class="board write-view">
-    <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation" novalidate>
-        <div class="mb-3">
-            <label for="title" class="form-label">제목</label>
-            <input type="text" class="form-control" id="title" name="title"
-                   placeholder="제목을 입력하세요" required>
-            <div class="invalid-feedback">
-                제목을 입력해주세요.
+    <c:if test="${userSession.userRole eq 'ADMIN'}">
+        <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" class="form-control" id="title" name="title"
+                       placeholder="제목을 입력하세요" required>
+                <div class="invalid-feedback">
+                    제목을 입력해주세요.
+                </div>
             </div>
-        </div>
 
-        <!-- Hidden inputs -->
-        <input type="hidden" name="category" value="REPLY"/>
-        <input type="hidden" name="replyStatus" value="DONE"/>
-        <input type="hidden" name="parentId" value="${row.boardId}"/>
+            <!-- Hidden inputs -->
+            <input type="hidden" name="category" value="REPLY"/>
+            <input type="hidden" name="replyStatus" value="DONE"/>
+            <input type="hidden" name="parentId" value="${row.boardId}"/>
 
-        <div class="mb-3">
-            <textarea id="summernote" name="content" required></textarea>
-        </div>
+            <div class="mb-3">
+                <textarea id="summernote" name="content" required></textarea>
+            </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">답변</button>
-        </div>
-    </form>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">답변</button>
+            </div>
+        </form>
+    </c:if>
 </div>
 </body>
 </html>

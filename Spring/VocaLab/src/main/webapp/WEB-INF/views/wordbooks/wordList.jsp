@@ -10,10 +10,11 @@
     <link href="/css/wordList.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/wordList.js"></script>
 </head>
 <body>
 <div class="container-fluid">
-    <input type="hidden" id="wordBookId" value=1 />
+    <input type="hidden" id="wordBookId" value="<%= request.getParameter("wordBookId") %>" />
     <div class="row">
         <!-- 선택된 단어 모달 창 -->
         <div id="selectedWordsModal" class="col-md-3 border-end p-3">
@@ -98,7 +99,5 @@
         </div>
     </div>
 </div>
-
-<script src="/js/wordList.js"></script>
 </body>
 </html>

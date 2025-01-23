@@ -3,11 +3,13 @@ package com.dev.vocalab.wordbooks;
 import com.dev.vocalab.files.FilesEntity;
 import com.dev.vocalab.files.FilesRepository;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +24,7 @@ public class WordBooksService {
 
 
     private final FilesRepository filesRepository;
+    private final WordBooksRepository wordBooksRepository;
     // Inject the static file path from application.properties
     @Value("${spring.web.resources.static-locations}")
     private String staticLocations;
@@ -63,11 +66,11 @@ public class WordBooksService {
         }
         return wordList;
     }
-    public void deleteWord(Integer wordBookId, List<String> deleteWordList) throws Exception{
+    public void deleteWord(Integer wordBookId, List<String> deleteWordList) throws Exception {
         Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD)
                 .stream()
                 .findFirst();
-        System.out.println("fileEntityOpt: " +fileEntityOpt);
+        System.out.println("fileEntityOpt: " + fileEntityOpt);
 
         if (fileEntityOpt.isEmpty()) {
             throw new Exception("No file found for the given wordBookId.");
@@ -87,16 +90,36 @@ public class WordBooksService {
             throw new Exception("The file does not exist: " + absoluteFilePath);
         }
 
-        // Read the CSV file
-        List<String[]> wordList = new ArrayList<>();
+        // Read the CSV file and filter out words to delete
+        List<String[]> remainingWords = new ArrayList<>();
         try (CSVReader csvReader = new CSVReader(new FileReader(absoluteFilePath))) {
             String[] line;
             while ((line = csvReader.readNext()) != null) {
-                wordList.add(line);
+                // Skip the line if the word (first column) is in the delete list
+                if (line.length > 0 && !deleteWordList.contains(line[0])) {
+                    remainingWords.add(line);
+                }
             }
         } catch (Exception e) {
             throw new Exception("Failed to read the CSV file: " + absoluteFilePath, e);
         }
-    }
 
+        // Write the filtered content back to the file
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(absoluteFilePath))) {
+            csvWriter.writeAll(remainingWords);
+        } catch (IOException e) {
+            throw new Exception("Failed to write to the CSV file: " + absoluteFilePath, e);
+        }
+    }
+    public void changeStatusOfBookmark(Integer wordBookId){
+        WordBooksEntity wordBooks = wordBooksRepository.findByWordBookId(wordBookId);
+        System.out.println("Before set: " + wordBooks.getBookmark());
+        if (wordBooks.getBookmark()==false){
+            wordBooks.setBookmark(true);
+        }else {
+            wordBooks.setBookmark(false);
+        }
+        System.out.println("After set: " + wordBooks.getBookmark());
+        wordBooksRepository.saveAndFlush(wordBooks);
+    }
 }

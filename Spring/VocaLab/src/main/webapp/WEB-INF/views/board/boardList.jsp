@@ -127,9 +127,11 @@
 
     <!-- 검색 및 작성 버튼 -->
     <div class="search-bar-group d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-primary" onclick="location.href='/CS/Write';">
-            작성
-        </button>
+        <c:if test="${not empty userSession}">
+            <button type="button" class="btn btn-primary" onclick="location.href='/CS/Write';">
+                작성
+            </button>
+        </c:if>
         <form method="get" action="/CS/${boardCat}" class="d-flex flex-grow-1">
             <input type="text" class="form-control" name="searchWord" value="${searchWord}"
                    placeholder="검색어를 입력하세요">

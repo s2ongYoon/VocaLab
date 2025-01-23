@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -35,6 +34,7 @@
         .wordbook-card:hover {
             transform: scale(1.05);
         }
+
         .modal-content {
             border-radius: 10px;
         }
@@ -59,24 +59,9 @@
         </div>
     </div>
     <div id="wordbooksContainer" class="wordbook-container">
-        <!-- 하드코딩된 데이터 -->
-        <c:forEach begin="1" end="15" var="i">
-            <div class="wordbook-card" data-created="${i * 100000}"
-                 data-title="단어장 ${i}"
-                 data-bookmark="${i % 2 == 0}">
-                <h5>단어장 ${i}</h5>
-                <p>생성일: 2025-01-${i}</p>
-                <c:if test="${i % 2 == 0}">
-                    <span class="badge bg-warning text-dark">즐겨찾기</span>
-                </c:if>
-            </div>
-        </c:forEach>
-    </div>
-    <!-- 단어장 카드 목록 -->
-    <div id="wordbooksContainer-real" class="wordbook-container">
-        <!-- 실제 데이터 기반 -->
         <c:forEach items="${wordbooks}" var="wordbook">
-            <div class="wordbook-card" data-created="${wordbook.createdAt.time}"
+            <div class="wordbook-card"
+                 data-created="${wordbook.wordBookId}"
                  data-title="${wordbook.wordBookTitle}"
                  data-bookmark="${wordbook.bookmark}">
                 <h5>${wordbook.wordBookTitle}</h5>
@@ -89,15 +74,14 @@
     </div>
 </div>
 <!-- 모달 -->
-<div class="modal fade" id="wordbookModal" tabindex="-1" aria-labelledby="wordbookModalLabel" aria-hidden="true">
+<div class="modal fade" id="wordbookModal" tabindex="-1" aria-labelledby="modalWordbookTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="wordbookModalLabel">단어장 작업</h5>
+                <h5 class="modal-title" id="modalWordbookTitle"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p id="modalWordbookTitle"></p>
                 <div class="d-flex flex-column gap-3">
                     <button class="btn btn-primary" id="btnMoveWordbook">단어장 이동</button>
                     <button class="btn btn-danger" id="btnDeleteWordbook">단어장 삭제</button>
@@ -110,82 +94,151 @@
         </div>
     </div>
 </div>
-
+</body>
+</html>
 <script>
     $(document).ready(function () {
-        // 카드 클릭 이벤트
-        $('.wordbook-card').on('click', function () {
-            const wordBookId = $(this).data('id');
-            const wordBookTitle = $(this).data('title');
-            const isBookmark = $(this).data('bookmark');
+        // 전역 변수로 현재 선택된 단어장 정보 관리
+        let selectedWordBook = null;
 
-            // 모달 타이틀 업데이트
-            $('#modalWordbookTitle').text(`"${wordBookTitle}" 단어장 작업`);
+        // 상수 정의
+        const MESSAGES = {
+            DELETE_CONFIRM: (title) => `단어장 "${title}"을(를) 삭제하시겠습니까?`,
+            DELETE_SUCCESS: (title) => `단어장 "${title}"이(가) 삭제되었습니다.`,
+            FAVORITE_TOGGLE: (title, action) => `단어장 "${title}"의 즐겨찾기 상태가 변경되었습니다.`,
+            PAGE_MOVE: (page, title) => `${page} 페이지로 이동합니다. 단어장: "${title}"`
+        };
 
-            // 즐겨찾기 버튼 텍스트 업데이트
-            if (isBookmark) {
-                $('#btnToggleFavorite').text('즐겨찾기 해제');
-            } else {
-                $('#btnToggleFavorite').text('즐겨찾기 등록');
+        // 모달 UI 업데이트 함수
+        function updateModalUI() {
+            if (selectedWordBook) {
+                $('#modalWordbookTitle').text(`"${selectedWordBook.title}" 단어장 작업`);
+                $('#btnToggleFavorite').text(
+                    selectedWordBook.bookmark ? '즐겨찾기 해제' : '즐겨찾기 등록'
+                );
             }
+        }
 
-            // 모달 데이터에 단어장 ID 저장
-            $('#btnMoveWordbook').data('id', wordBookId);
-            $('#btnDeleteWordbook').data('id', wordBookId);
-            $('#btnToggleFavorite').data('id', wordBookId);
-            $('#btnGoWriting').data('id', wordBookId);
-            $('#btnGoNews').data('id', wordBookId);
-            $('#btnGoTest').data('id', wordBookId);
+        // 모달 이벤트 바인딩
+        function bindModalEvents() {
+            // 단어장 이동
+            $('#btnMoveWordbook').on('click', function() {
+                if (selectedWordBook) {
+                    const wordBookId = selectedWordBook.id;
+                    window.location.href = '/WordBook/Word?wordBookId=' + wordBookId;
+                }
+            });
 
-            // 모달 표시
+            // 단어장 삭제
+            $('#btnDeleteWordbook').on('click', function() {
+                if (selectedWordBook && confirm(MESSAGES.DELETE_CONFIRM(selectedWordBook.title))) {
+                    $.ajax({
+                        url: '/api/wordbook/' + selectedWordBook.id,
+                        method: 'DELETE',
+                        success: function() {
+                            alert(MESSAGES.DELETE_SUCCESS(selectedWordBook.title));
+                            $('#wordbookModal').modal('hide');
+                            // 카드 제거
+                            $(`[data-id="${selectedWordBook.id}"]`).remove();
+                        }
+                    });
+                }
+            });
+
+            // 즐겨찾기 토글
+            $('#btnToggleFavorite').on('click', function() {
+                if (selectedWordBook) {
+                    const action = selectedWordBook.bookmark ? '해제' : '등록';
+                    const wordBookId = selectedWordBook.id;
+                    $.ajax({
+                        url: '/WordBook/bookmark',  // URL 경로 수정
+                        method: 'POST',
+                        data: {
+                            wordBookId: wordBookId,
+                            bookmark: !selectedWordBook.bookmark
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                selectedWordBook.bookmark = !selectedWordBook.bookmark;
+                                alert(MESSAGES.FAVORITE_TOGGLE(selectedWordBook.title, action));
+                                updateModalUI();
+
+                                window.location.reload();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            alert('즐겨찾기 변경에 실패했습니다.');
+                        }
+                    });
+                }
+            });
+
+            // 기능별 페이지 이동
+            ['Writing', 'News', 'Test'].forEach(function(page) {
+                $(`#btnGo${page}`).on('click', function() {
+                    if (selectedWordBook) {
+                        alert(MESSAGES.PAGE_MOVE(page, selectedWordBook.title));
+                        // TODO: 실제 페이지 이동 구현
+                        window.location.href = `/WordBook/${page.toLowerCase()}?wordBookId=${selectedWordBook.id}`;
+                    }
+                });
+            });
+        }
+
+        // 카드 클릭 이벤트 바인딩
+        $('#wordbooksContainer').on('click', '.wordbook-card', function() {
+            const $card = $(this);
+            selectedWordBook = {
+                id: $card.attr('data-created'),
+                title: $card.attr('data-title'),
+                bookmark: $card.attr('data-bookmark') === 'true'
+            };
+
+            console.log('Selected wordbook:', selectedWordBook);
+            updateModalUI();
             $('#wordbookModal').modal('show');
         });
 
-        // 단어장 이동
-        $('#btnMoveWordbook').on('click', function () {
-            const wordBookId = $(this).data('id');
-            // window.location.href = `/WordBook/Word`;
-            window.location.href = `/WordBook/Word?wordBookId=1<%--${wordBookId}--%>`;
+        // 정렬 기능 구현
+        $('#sortBy').on('change', function() {
+            const sortValue = $(this).val();
+            const $container = $('#wordbooksContainer');
+            const $cards = $container.children('.wordbook-card').get();
+
+            $cards.sort(function(a, b) {
+                const $a = $(a);
+                const $b = $(b);
+
+                switch(sortValue) {
+                    case 'createdAsc':
+                        return $a.attr('data-created').localeCompare($b.attr('data-created'));
+                    case 'createdDesc':
+                        return $b.attr('data-created').localeCompare($a.attr('data-created'));
+                    case 'titleAsc':
+                        return $a.attr('data-title').localeCompare($b.attr('data-title'));
+                    default:
+                        return 0;
+                }
+            });
+
+            $container.append($cards);
         });
 
-        // 단어장 삭제
-        $('#btnDeleteWordbook').on('click', function () {
-            const wordBookId = $(this).data('id');
-            if (confirm(`단어장 ${wordBookId}을(를) 삭제하시겠습니까?`)) {
-                alert(`단어장 ${wordBookId}이(가) 삭제되었습니다.`);
-                // 삭제 로직 추가
-            }
+        // 즐겨찾기 필터 기능 구현
+        $('#showFavorites').on('change', function() {
+            const showOnlyFavorites = $(this).is(':checked');
+            $('.wordbook-card').each(function() {
+                const $card = $(this);
+                const isBookmarked = $card.attr('data-bookmark') === 'true';
+                $card.toggle(!showOnlyFavorites || isBookmarked);
+            });
         });
 
-        // 즐겨찾기 등록/해제
-        $('#btnToggleFavorite').on('click', function () {
-            const wordBookId = $(this).data('id');
-            const action = $(this).text() === '즐겨찾기 등록' ? '등록' : '해제';
-            alert(`단어장 ${wordBookId}이(가) 즐겨찾기 ${action}되었습니다.`);
-            // 즐겨찾기 토글 로직 추가
-        });
-
-        // 작문 이동
-        $('#btnGoWriting').on('click', function () {
-            const wordBookId = $(this).data('id');
-            alert(`작문 페이지로 이동합니다. 단어장 ID: ${wordBookId}`);
-            // 작문 페이지 이동 로직 추가
-        });
-
-        // 뉴스 이동
-        $('#btnGoNews').on('click', function () {
-            const wordBookId = $(this).data('id');
-            alert(`뉴스 페이지로 이동합니다. 단어장 ID: ${wordBookId}`);
-            // 뉴스 페이지 이동 로직 추가
-        });
-
-        // 테스트 이동
-        $('#btnGoTest').on('click', function () {
-            const wordBookId = $(this).data('id');
-            alert(`테스트 페이지로 이동합니다. 단어장 ID: ${wordBookId}`);
-            // 테스트 페이지 이동 로직 추가
-        });
+        // 초기 이벤트 바인딩
+        bindModalEvents();
     });
 </script>
+
 </body>
 </html>

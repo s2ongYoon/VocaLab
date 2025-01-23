@@ -150,21 +150,19 @@
                 제목을 입력해주세요.
             </div>
         </div>
-
         <c:if test="${userSession.userRole eq 'ADMIN'}">
-
-        </c:if>
-        <div class="mb-3">
-            <label for="category" class="form-label">카테고리</label>
-            <select class="form-select" id="category" name="category" required>
-                <option selected value="" disabled>선택하세요</option>
-                <option value="NOTICE">공지</option>
-                <option value="FAQ">FAQ</option>
-            </select>
-            <div class="invalid-feedback">
-                카테고리를 선택해주세요.
+            <div class="mb-3">
+                <label for="category" class="form-label">카테고리</label>
+                <select class="form-select" id="category" name="category" required>
+                    <option selected value="" disabled>선택하세요</option>
+                    <option value="NOTICE">공지</option>
+                    <option value="FAQ">FAQ</option>
+                </select>
+                <div class="invalid-feedback">
+                    카테고리를 선택해주세요.
+                </div>
             </div>
-        </div>
+        </c:if>
         <c:if test="${userSession.userRole eq 'USER'}">
             <input type="hidden" name="category" value="INQUIRY"/>
         </c:if>

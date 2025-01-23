@@ -12,6 +12,7 @@ print(f"Loaded API Key: {apiKey}")  # API 키가 제대로 로드되었는지 �
 # Google Generative AI API 설정
 genai.configure(api_key=apiKey)
 model = genai.GenerativeModel('gemini-1.5-flash')
+# generation_config = genai.GenerationConfig(temperature=0)
 
 app = Flask(__name__)
 CORS(app)
@@ -23,10 +24,11 @@ def word_mean():
     if not word:
         return jsonify({"error": "word parameter is missing"}), 400  # 오류 응답
 
+    print("Send to Gemini: ",word)
     # Google Generative AI API 호출
     try:
         response = model.generate_content(
-            f"{word} 을 word: {word} partofspeech:품사 mean:한국어 뜻 speech:발음기호 example:생성한 예문(예문의 뜻) (단,예문은 1개) 형태로 json 형식으로 보내시오."
+            f"{word} 을 {{word:word, partofspeech:품사, mean:한국어 뜻, speech:발음기호, example:생성한 예문(예문의 뜻)}} (단,예문은 1개이며 '예문(뜻)'형태여야함. 그리고 json 배열을 {word}로 감싸면 안됨.) 형태로 json 형식으로 1개만 보내시오."
         )
         response_content = response.text
         print(response_content)
@@ -44,11 +46,14 @@ def word_mean():
         # JSON 텍스트를 파싱
         parsed_json = json.loads(json_text)
 
+        # 만약 응답이 단어를 키로 가지는 형태라면 내부 객체만 추출
+        if isinstance(parsed_json, dict) and len(parsed_json) == 1 and word.lower() in parsed_json:
+            parsed_json = parsed_json[word.lower()]
+
         # 파싱된 데이터를 파일로 저장 (옵션)
         with open("word_mean.json", "w", encoding="utf-8") as json_file:
             json.dump(parsed_json, json_file, ensure_ascii=False, indent=4)
-
-        # 클라이언트로 JSON 데이터 반환
+        
         return jsonify(parsed_json)
 
     except json.JSONDecodeError as e:

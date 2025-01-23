@@ -30,8 +30,10 @@ public class BoardService {
     }
 
     // 검색 조건에 따른 페이지 리스트 불러오기
-    public Page<BoardDTO> selectListPageSearch(String search, Pageable pageable) {
-        return boardRepository.findByTitleLike(search, pageable)
+    public Page<BoardDTO> selectListPageSearch(String search, Pageable pageable, BoardEntity.Category category) {
+        // 검색어 처리
+        search = (search == null || search.isBlank()) ? "%" : "%" + search.trim() + "%";
+        return boardRepository.findByTitleLikeAndCategory(search, category, pageable)
                 .map(this::convertToDTO);
     }
     // parentId로 답변 게시글 조회
@@ -40,6 +42,18 @@ public class BoardService {
                 .map(this::convertToDTO)
                 .orElse(null);
     }
+
+    public Page<BoardDTO> selectListPageByUserId(Pageable pageable, BoardEntity.Category category, String userId) {
+        return boardRepository.findAllByCategoryAndUserId(category, userId, pageable)
+                .map(this::convertToDTO);
+    }
+
+    public Page<BoardDTO> selectListPageByUserIdAndSearch(String searchWord, Pageable pageable, BoardEntity.Category category, String userId) {
+        return boardRepository.findAllByCategoryAndUserIdAndSearch(searchWord, pageable, category, userId)
+                .map(this::convertToDTO);
+    }
+
+
 
     // 게시글 작성/수정
     @Transactional

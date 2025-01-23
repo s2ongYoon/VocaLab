@@ -16,4 +16,6 @@ public interface WordBooksRepository extends JpaRepository<WordBooksEntity, Inte
 
     // 제목으로 WordBook 검색
     List<WordBooksEntity> findByWordBookTitleContainingIgnoreCase(String wordBookTitle);
+
+    WordBooksEntity findByWordBookId(Integer wordBookId);
 }
