@@ -44,7 +44,12 @@ dependencies {
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 
-// security
+//    JSON, CSV, Files
+    implementation 'com.googlecode.json-simple:json-simple:1.1'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'com.opencsv:opencsv:5.7.1'
+
+//     security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.security:spring-security-taglibs'

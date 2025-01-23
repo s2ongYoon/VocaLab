@@ -1,17 +1,12 @@
 package com.dev.vocalab.users;
 
-import com.dev.vocalab.oauth2.users.CustomOAuth2Users;
-import com.dev.vocalab.oauth2.users.CustomOIDCUsers;
-import com.dev.vocalab.users.details.CustomUsersDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -40,7 +35,7 @@ public class UsersController {
     @GetMapping("/register")
     public String registerPage(Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
-            return "redirect:board/csmain";
+            return "redirect:/CS/Main";
         }
         return "users/registration";
     }
@@ -72,10 +67,10 @@ public class UsersController {
 
             model.addAttribute("principal", principal);
 
-            return "board/csmain";
+            return "redirect:/CS/Main";
         }
 
-        return "board/csmain";
+        return "redirect:/CS/Main";
     }
     
 
