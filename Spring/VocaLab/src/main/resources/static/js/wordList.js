@@ -272,6 +272,52 @@ $(document).ready(function () {
             }
         });
     });
+    // 버튼 ID와 해당하는 API 엔드포인트를 매핑
+    const endpoints = {
+        'btnTest': '/api/test',
+        'btnWrite': '/api/write',
+        'btnNews': '/api/news'
+    };
+
+// 컨텐츠 버튼 공통 로직을 처리하는 함수
+    function contentButtonClick(url,selectedWordList){
+        if (!selectedWordList || selectedWordList.length === 0) {
+            alert("선택된 단어가 없습니다.");
+            return;
+        }
+        console.log(selectedWordList);
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: JSON.stringify({ words: selectedWordList }),
+            contentType: 'application/json',
+            success: function(response) {
+                console.log('Success:', response);
+                // 공통 성공 처리 로직
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                // 공통 에러 처리 로직
+            }
+        });
+    }
+    // 버튼들에 이벤트 리스너 등록
+    $('#btnTest, #btnWrite, #btnNews').on('click', function() {
+        const buttonId = $(this).attr('id');
+        const url = endpoints[buttonId];
+        const selectedWordList = Array.from(selectedWords.keys());
+        // btnTest인 경우 특별 처리
+        if (buttonId === 'btnTest') {
+            if(selectedWordList.length < 20){
+                alert("테스트를 진행할 시 단어를 20개 이상 선택하셔야 합니다.");
+                return;
+            }
+            if (!confirm("테스트를 시작하시겠습니까?")) {  // 사용자 확인
+                return;  // 취소하면 여기서 종료
+            }
+        }
+        contentButtonClick(url,selectedWordList);
+    });
 
     // 초기화
     $('#selectedWordsModal').hide();

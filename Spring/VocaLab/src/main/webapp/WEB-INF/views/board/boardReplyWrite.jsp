@@ -84,10 +84,26 @@
                             deleteSummernoteImageFile(deletedImageUrl);
                         }
                     },
+                    onPaste: function (e) {
+                        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                        e.preventDefault();
+                        document.execCommand('insertText', false, bufferText);
+
+                    },
+                    sanitize: true,
                 }
             });
 
             $('form[name="frm"]').on('submit', function(e) {
+                // 제목 필터링
+                var title = $('#title').val();
+                // 더 엄격한 태그/속성 필터링
+                if (/<[^>]*[<>]|[\s\S]*?(javascript|data|vbscript):|[\s\S]*?(href|action|formaction|src|background)[\s]*=|on\w+[\s]*=/i.test(title)) {
+                    alert('제목에 허용되지 않는 문자나 태그가 포함되어 있습니다.');
+                    e.preventDefault();
+                    return false;
+                }
+                // 내용 필터링 및 검증
                 var content = $('#summernote').summernote('code');
                 if (!content || content === '<p><br></p>') {
                     alert('내용을 입력하세요.');
@@ -140,7 +156,7 @@
 <body>
 <div class="board write-view">
     <c:if test="${userSession.userRole eq 'ADMIN'}">
-        <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation">
             <div class="mb-3">
                 <label for="title" class="form-label">제목</label>
                 <input type="text" class="form-control" id="title" name="title"

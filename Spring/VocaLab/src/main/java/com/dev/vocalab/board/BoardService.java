@@ -31,9 +31,9 @@ public class BoardService {
 
     // 검색 조건에 따른 페이지 리스트 불러오기
     public Page<BoardDTO> selectListPageSearch(String search, Pageable pageable, BoardEntity.Category category) {
-        // 검색어 처리
-        search = (search == null || search.isBlank()) ? "%" : "%" + search.trim() + "%";
-        return boardRepository.findByTitleLikeAndCategory(search, category, pageable)
+        // 검색어를 안전하게 처리
+        String safeSearch = (search == null || search.isBlank()) ? "" : search.trim();
+        return boardRepository.findByTitleLikeAndCategory(safeSearch, category, pageable)
                 .map(this::convertToDTO);
     }
     // parentId로 답변 게시글 조회
@@ -49,7 +49,9 @@ public class BoardService {
     }
 
     public Page<BoardDTO> selectListPageByUserIdAndSearch(String searchWord, Pageable pageable, BoardEntity.Category category, String userId) {
-        return boardRepository.findAllByCategoryAndUserIdAndSearch(searchWord, pageable, category, userId)
+        // 검색어를 안전하게 처리
+        String safeSearchWord = (searchWord == null || searchWord.isBlank()) ? "" : searchWord.trim();
+        return boardRepository.findAllByCategoryAndUserIdAndSearch(safeSearchWord, pageable, category, userId)
                 .map(this::convertToDTO);
     }
 
@@ -107,6 +109,7 @@ public class BoardService {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .replyStatus(entity.getReplyStatus() != null ? entity.getReplyStatus() : BoardEntity.ReplyStatus.NONE)
+                .userId(entity.getUser()!= null ? entity.getUser().getUserId() : "Unknown")
                 .userNickname(entity.getUser() != null ? entity.getUser().getUserNickname() : "Unknown")
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
