@@ -323,4 +323,57 @@ $(document).ready(function () {
     $('#selectedWordsModal').hide();
     $('#btnRestoreModal').hide();
     fetchWordData();
+
+    $('#sortSelect').on('change', function () {
+        const sortType = $(this).val();
+        sortWordTable(sortType);
+    });
+
+    function sortWordTable(sortType) {
+        let wordArray = $('#wordTableBody tr td').map(function () {
+            return {
+                element: $(this),
+                word: $(this).data('word') || '',
+                meaning: $(this).data('meaning') || '',
+                isSelected: $(this).hasClass('highlight') // 기존 하이라이트 여부 저장
+            };
+        }).get();
+
+        switch (sortType) {
+            case 'original':
+                wordArray.sort((a, b) => a.element.index() - b.element.index()); // 원래 순서대로 정렬
+                break;
+            case 'abc':
+                wordArray.sort((a, b) => a.word.localeCompare(b.word, 'ko'));
+                break;
+            case 'zyx':
+                wordArray.sort((a, b) => b.word.localeCompare(a.word, 'ko'));
+                break;
+            case 'meaning_asc':
+                wordArray.sort((a, b) => a.meaning.localeCompare(b.meaning, 'ko'));
+                break;
+            case 'meaning_desc':
+                wordArray.sort((a, b) => b.meaning.localeCompare(a.meaning, 'ko'));
+                break;
+            default:
+                return;
+        }
+
+        // 정렬된 데이터를 다시 추가
+        const tableBody = $('#wordTableBody');
+        tableBody.empty();
+        let rowHtml = '<tr>';
+
+        wordArray.forEach((item, index) => {
+            const tdHtml = item.element.prop('outerHTML');
+            rowHtml += tdHtml.replace('class="', `class="${item.isSelected ? 'highlight ' : ''}`); // 선택된 단어 유지
+            if ((index + 1) % 6 === 0) {
+                rowHtml += '</tr><tr>';
+            }
+        });
+
+        rowHtml += '</tr>';
+        tableBody.append(rowHtml);
+    }
+
 });
