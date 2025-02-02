@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단어장 페이지</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="/css/wordList.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -27,7 +28,7 @@
 
         <div class="col-md-9">
             <div class="py-4">
-                <h1>단어장</h1>
+                <h1 id="wordbook-title">단어장</h1>
                 <div class="action-buttons d-flex justify-content-between align-items-center">
                     <div class="search-section d-flex align-items-center gap-2">
                         <select id="sortSelect" class="form-select" style="width: auto;">

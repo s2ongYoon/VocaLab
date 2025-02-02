@@ -8,9 +8,34 @@ let timeoutId = null;
 let wordData = []; // 서버에서 로드한 데이터 저장
 const selectedWords = new Map(); // 선택된 단어 관리
 let isModalMinimized = false; // 최소화 상태 여부
+let originalOrder = [];
 
 $(document).ready(function () {
     const wordBookId = $('#wordBookId').val(); // JSP에서 전달받은 ID
+    // 초기화
+    $('#selectedWordsModal').hide();
+    $('#btnRestoreModal').hide();
+    // 초기 데이터 로드
+    loadWordBookInfo();
+    fetchWordData();
+    // 단어장 정보 로드 함수
+    function loadWordBookInfo() {
+        $.ajax({
+            url: '/WordBook/WordBookData',
+            type: 'GET',
+            data: { wordBookId },
+            success: function(response) {
+                // 단어장 제목 영역 업데이트
+                const titleHtml = response.bookmark ?
+                    `${response.wordBookTitle} <i class="fas fa-star text-warning"></i>` :
+                    response.wordBookTitle;
+                $('#wordbook-title').html(titleHtml);
+            },
+            error: function(xhr) {
+                console.error('단어장 정보를 불러오는데 실패했습니다.');
+            }
+        });
+    }
 
     // 서버 데이터 로드
     function fetchWordData() {
@@ -33,6 +58,7 @@ $(document).ready(function () {
     function renderWordTable(data) {
         const tableBody = $('#wordTableBody');
         tableBody.empty();
+        originalOrder = [...data];
 
         for (let i = 0; i < data.length; i += 6) {
             let rowHtml = '<tr>';
@@ -273,56 +299,43 @@ $(document).ready(function () {
         });
     });
     // 버튼 ID와 해당하는 API 엔드포인트를 매핑
-    const endpoints = {
-        'btnTest': '/api/test',
-        'btnWrite': '/api/write',
-        'btnNews': '/api/news'
+    const pageMapping = {
+        'btnTest': 'Test',
+        'btnWrite': 'Writing',
+        'btnNews': 'News'
     };
 
 // 컨텐츠 버튼 공통 로직을 처리하는 함수
-    function contentButtonClick(url,selectedWordList){
+    function contentButtonClick(pageType,selectedWordList){
         if (!selectedWordList || selectedWordList.length === 0) {
-            alert("선택된 단어가 없습니다.");
+            alert('선택된 단어가 없습니다.');
             return;
         }
-        console.log(selectedWordList);
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: JSON.stringify({ words: selectedWordList }),
-            contentType: 'application/json',
-            success: function(response) {
-                console.log('Success:', response);
-                // 공통 성공 처리 로직
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                // 공통 에러 처리 로직
-            }
-        });
+        // 테스트의 경우 특별 처리
+        if (pageType === 'Test' && selectedWordList.length < 20) {
+            alert('테스트를 진행할 시 단어를 20개 이상 선택하셔야 합니다.');
+            return;
+        }
+        const wordBookId = $('#wordBookId').val();
+
+        // 선택된 단어 리스트를 세션 스토리지에 저장
+        sessionStorage.setItem('selectedWords', JSON.stringify(selectedWordList));
+
+        // 페이지 이동
+        window.location.href = '/WordBook/' + pageType + '?wordBookId=' + wordBookId;
     }
     // 버튼들에 이벤트 리스너 등록
     $('#btnTest, #btnWrite, #btnNews').on('click', function() {
         const buttonId = $(this).attr('id');
-        const url = endpoints[buttonId];
+        const pageType = pageMapping[buttonId];
         const selectedWordList = Array.from(selectedWords.keys());
-        // btnTest인 경우 특별 처리
-        if (buttonId === 'btnTest') {
-            if(selectedWordList.length < 20){
-                alert("테스트를 진행할 시 단어를 20개 이상 선택하셔야 합니다.");
-                return;
-            }
-            if (!confirm("테스트를 시작하시겠습니까?")) {  // 사용자 확인
-                return;  // 취소하면 여기서 종료
-            }
-        }
-        contentButtonClick(url,selectedWordList);
-    });
 
-    // 초기화
-    $('#selectedWordsModal').hide();
-    $('#btnRestoreModal').hide();
-    fetchWordData();
+        if (buttonId === 'btnTest' && !confirm("테스트를 시작하시겠습니까?")) {
+            return;
+        }
+
+        contentButtonClick(pageType, selectedWordList);
+    });
 
     $('#sortSelect').on('change', function () {
         const sortType = $(this).val();
@@ -335,13 +348,14 @@ $(document).ready(function () {
                 element: $(this),
                 word: $(this).data('word') || '',
                 meaning: $(this).data('meaning') || '',
-                isSelected: $(this).hasClass('highlight') // 기존 하이라이트 여부 저장
+                isSelected: $(this).hasClass('highlight'), // 기존 하이라이트 여부 저장
+                originalIndex: originalOrder.findIndex(item => item[0] === $(this).data('word')) // 원본 순서 인덱스
             };
         }).get();
 
         switch (sortType) {
             case 'original':
-                wordArray.sort((a, b) => a.element.index() - b.element.index()); // 원래 순서대로 정렬
+                wordArray.sort((a, b) => a.originalIndex - b.originalIndex); // 원래 순서대로 정렬
                 break;
             case 'abc':
                 wordArray.sort((a, b) => a.word.localeCompare(b.word, 'ko'));

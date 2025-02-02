@@ -8,6 +8,8 @@ import com.dev.vocalab.users.UsersRepository;
 import com.dev.vocalab.users.details.AuthenticationUtil;
 import com.dev.vocalab.users.details.CustomUsersDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/WordBook")
 @Controller
@@ -96,6 +99,37 @@ public class WordBooksController {
         }
     }
 
+    @GetMapping("/WordBookData")
+    @ResponseBody
+    public ResponseEntity<WordBooksDTO> getWordBookData(@RequestParam("wordBookId") Integer wordBookId) {
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            // 단어장 정보 조회
+            WordBooksEntity wordBook = wordBooksService.loadWordBookStatus(wordBookId);
+
+            // 조회된 데이터가 없는 경우
+            if (wordBook == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Entity를 DTO로 변환
+            WordBooksDTO dto = WordBooksDTO.builder()
+                    .wordBookId(wordBook.getWordBookId())
+                    .wordBookTitle(wordBook.getWordBookTitle())
+                    .bookmark(wordBook.getBookmark())
+                    .userId(wordBook.getUserId())
+                    .build();
+
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     // 단어장 내부 단어 삭제 API
     @PostMapping("/WordData/remove")
     @ResponseBody
@@ -121,5 +155,24 @@ public class WordBooksController {
         response.put("success", true);
         response.put("message", "즐겨찾기 상태가 변경되었습니다.");
         return response;
+    }
+    @GetMapping("/getWords")
+    @ResponseBody
+    public ResponseEntity<List<String>> getWordsByWordBookId(@RequestParam("wordBookId") Integer wordBookId) {
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            List<String[]> wordList = wordBooksService.readWordBook(wordBookId);
+            // 첫 번째 열만 추출
+            List<String> firstColumnWords = wordList.stream()
+                    .map(row -> row[0])  // 각 행의 첫 번째 열 선택
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(firstColumnWords);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

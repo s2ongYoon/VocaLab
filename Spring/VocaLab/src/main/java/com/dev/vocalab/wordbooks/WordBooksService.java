@@ -22,7 +22,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WordBooksService {
 
-
     private final FilesRepository filesRepository;
     private final WordBooksRepository wordBooksRepository;
     // Inject the static file path from application.properties
@@ -121,5 +120,9 @@ public class WordBooksService {
         }
         System.out.println("After set: " + wordBooks.getBookmark());
         wordBooksRepository.saveAndFlush(wordBooks);
+    }
+
+    public WordBooksEntity loadWordBookStatus(Integer wordBookId){
+        return wordBooksRepository.findByWordBookId(wordBookId);
     }
 }
