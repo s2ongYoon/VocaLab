@@ -6,10 +6,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${pageTitle}</title>
+    <!-- jQuery 먼저 로드 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Bootstrap 5.3.0 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('form[method="get"]').on('submit', function(e) {
+                var searchWord = $('input[name="searchWord"]').val();
+                // 더 엄격한 필터링
+                if (/[<>{}[\]"';]|javascript:|data:|vbscript:|expression|alert|onclick|onerror/i.test(searchWord)) {
+                    alert('검색어에 특수문자나 스크립트를 포함할 수 없습니다.');
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
     <style>
         .board table tbody tr {
             cursor: pointer;

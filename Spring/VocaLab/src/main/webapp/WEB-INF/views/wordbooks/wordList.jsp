@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단어장 페이지</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="/css/wordList.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -27,21 +28,29 @@
 
         <div class="col-md-9">
             <div class="py-4">
-                <h1>단어장</h1>
+                <h1 id="wordbook-title" class="d-flex align-items-center justify-content-center">
+                    <span id="title-text">단어장</span>
+                    <button class="btn btn-sm btn-outline-primary ms-2" id="btnEditTitle">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </h1>
                 <div class="action-buttons d-flex justify-content-between align-items-center">
-                    <div class="d-flex gap-2">
+                    <div class="search-section d-flex align-items-center gap-2">
+                        <select id="sortSelect" class="form-select" style="width: auto;">
+                            <option value="original">기본 순서</option>
+                            <option value="abc">ABC 순</option>
+                            <option value="zyx">ZYX 순</option>
+                            <option value="meaning_asc">가나다(뜻) 순</option>
+                            <option value="meaning_desc">역순(뜻)</option>
+                        </select>
                         <button id="btnSelectAll" class="btn btn-primary">전체 선택</button>
                         <button id="btnDeselectAll" class="btn btn-secondary">전체 해제</button>
-                        <div class="search-section d-flex align-items-center gap-2">
-                            <input type="text" id="searchInput" class="form-control" placeholder="단어를 검색하세요">
-                            <button class="btn btn-success" id="btnCreateContent" data-bs-toggle="modal" data-bs-target="#contentModal">컨텐츠 생성</button>
-                            <button id="wordDeleteBtn" class="btn btn-danger btn-remove-word">단어 삭제</button>
-                        </div>
+                        <input type="text" id="searchInput" class="form-control" placeholder="단어를 검색하세요">
+                        <button class="btn btn-success" id="btnCreateContent" data-bs-toggle="modal" data-bs-target="#contentModal">컨텐츠 생성</button>
+                        <button id="wordDeleteBtn" class="btn btn-danger btn-remove-word">단어 삭제</button>
                     </div>
                     <button id="btnRestoreModal" class="btn btn-primary restore-btn">+</button>
                 </div>
-
-
 
                 <div class="infinite-scroll-container">
                     <table class="table word-table">

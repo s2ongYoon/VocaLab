@@ -35,6 +35,11 @@
 
     <script>
         $(document).ready(function() {
+            // content를 불러와서 필터링
+            var content =  `${row.content}`.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            $("#title").val('${row.title}'.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''));
+            // 필터링된 content를 summernote에 설정
+            $('#summernote').val(content);
             $('#summernote').summernote({
                 height: 800,
                 lang: 'ko-KR',
@@ -85,10 +90,25 @@
                             deleteSummernoteImageFile(deletedImageUrl);
                         }
                     },
+                    onPaste: function (e) {
+                        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                        e.preventDefault();
+                        document.execCommand('insertText', false, bufferText);
+
+                    },
+                    sanitize: true,
                 }
             });
 
             $('form[name="frm"]').on('submit', function(e) {
+                // 제목 필터링
+                var title = $('#title').val();
+                if (/<[^>]*>|alert|onerror|onclick/i.test(title)) {
+                    alert('제목에 HTML 태그나 스크립트를 포함할 수 없습니다.');
+                    e.preventDefault();
+                    return false;
+                }
+                // 내용 필터링 및 검증
                 var content = $('#summernote').summernote('code');
                 if (!content || content === '<p><br></p>') {
                     alert('내용을 입력하세요.');

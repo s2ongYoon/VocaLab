@@ -8,9 +8,34 @@ let timeoutId = null;
 let wordData = []; // 서버에서 로드한 데이터 저장
 const selectedWords = new Map(); // 선택된 단어 관리
 let isModalMinimized = false; // 최소화 상태 여부
+let originalOrder = [];
 
 $(document).ready(function () {
     const wordBookId = $('#wordBookId').val(); // JSP에서 전달받은 ID
+    // 초기화
+    $('#selectedWordsModal').hide();
+    $('#btnRestoreModal').hide();
+    // 초기 데이터 로드
+    loadWordBookInfo();
+    fetchWordData();
+    // 단어장 정보 로드 함수
+    function loadWordBookInfo() {
+        $.ajax({
+            url: '/WordBook/WordBookData',
+            type: 'GET',
+            data: { wordBookId },
+            success: function(response) {
+                var titleHtml = response.wordBookTitle;
+                if (response.bookmark) {
+                    titleHtml = response.wordBookTitle + ' <i class="fas fa-star text-warning"></i>';
+                }
+                $('#title-text').html(titleHtml);
+            },
+            error: function(xhr) {
+                console.error('단어장 정보를 불러오는데 실패했습니다.');
+            }
+        });
+    }
 
     // 서버 데이터 로드
     function fetchWordData() {
@@ -33,6 +58,7 @@ $(document).ready(function () {
     function renderWordTable(data) {
         const tableBody = $('#wordTableBody');
         tableBody.empty();
+        originalOrder = [...data];
 
         for (let i = 0; i < data.length; i += 6) {
             let rowHtml = '<tr>';
@@ -253,28 +279,202 @@ $(document).ready(function () {
             alert('최소 한개 이상 선택해주세요.');
             return;
         }
+        if(confirm('정말 삭제 하시겠습니까?')){
+            $.ajax({
+                url: '/WordBook/WordData/remove',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    wordBookId: wordBookId,
+                    words: selectedWordList
+                }),
+                success: function (response) {
+                    alert('단어가 삭제 되었습니다.');
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('데이터 전송에 실패했습니다.');
+                    console.error('AJAX 에러:', error);
+                }
+            });
+        }else{
+            return;
+        }
+    });
+    // 버튼 ID와 해당하는 API 엔드포인트를 매핑
+    const pageMapping = {
+        'btnTest': 'Test',
+        'btnWrite': 'Writing',
+        'btnNews': 'News'
+    };
 
-        $.ajax({
-            url: '/WordBook/WordData/remove',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                wordBookId: wordBookId,
-                words: selectedWordList
-            }),
-            success: function (response) {
-                alert('단어가 삭제 되었습니다.');
-                window.location.reload();
-            },
-            error: function (xhr, status, error) {
-                alert('데이터 전송에 실패했습니다.');
-                console.error('AJAX 에러:', error);
-            }
-        });
+// 컨텐츠 버튼 공통 로직을 처리하는 함수
+    function contentButtonClick(pageType,selectedWordList){
+        if (!selectedWordList || selectedWordList.length === 0) {
+            alert('선택된 단어가 없습니다.');
+            return;
+        }
+        // 테스트의 경우 특별 처리
+        if (pageType === 'Test' && selectedWordList.length < 20) {
+            alert('테스트를 진행할 시 단어를 20개 이상 선택하셔야 합니다.');
+            return;
+        }
+        const wordBookId = $('#wordBookId').val();
+
+        // 선택된 단어 리스트를 세션 스토리지에 저장
+        sessionStorage.setItem('selectedWords', JSON.stringify(selectedWordList));
+
+        // 페이지 이동
+        window.location.href = '/WordBook/' + pageType + '?wordBookId=' + wordBookId;
+    }
+    // 버튼들에 이벤트 리스너 등록
+    $('#btnTest, #btnWrite, #btnNews').on('click', function() {
+        const buttonId = $(this).attr('id');
+        const pageType = pageMapping[buttonId];
+        const selectedWordList = Array.from(selectedWords.keys());
+
+        if (buttonId === 'btnTest' && !confirm("테스트를 시작하시겠습니까?")) {
+            return;
+        }
+
+        contentButtonClick(pageType, selectedWordList);
     });
 
-    // 초기화
-    $('#selectedWordsModal').hide();
-    $('#btnRestoreModal').hide();
-    fetchWordData();
+    $('#sortSelect').on('change', function () {
+        const sortType = $(this).val();
+        sortWordTable(sortType);
+    });
+
+    function sortWordTable(sortType) {
+        let wordArray = $('#wordTableBody tr td').map(function () {
+            return {
+                element: $(this),
+                word: $(this).data('word') || '',
+                meaning: $(this).data('meaning') || '',
+                isSelected: $(this).hasClass('highlight'), // 기존 하이라이트 여부 저장
+                originalIndex: originalOrder.findIndex(item => item[0] === $(this).data('word')) // 원본 순서 인덱스
+            };
+        }).get();
+
+        switch (sortType) {
+            case 'original':
+                wordArray.sort((a, b) => a.originalIndex - b.originalIndex); // 원래 순서대로 정렬
+                break;
+            case 'abc':
+                wordArray.sort((a, b) => a.word.localeCompare(b.word, 'ko'));
+                break;
+            case 'zyx':
+                wordArray.sort((a, b) => b.word.localeCompare(a.word, 'ko'));
+                break;
+            case 'meaning_asc':
+                wordArray.sort((a, b) => a.meaning.localeCompare(b.meaning, 'ko'));
+                break;
+            case 'meaning_desc':
+                wordArray.sort((a, b) => b.meaning.localeCompare(a.meaning, 'ko'));
+                break;
+            default:
+                return;
+        }
+
+        // 정렬된 데이터를 다시 추가
+        const tableBody = $('#wordTableBody');
+        tableBody.empty();
+        let rowHtml = '<tr>';
+
+        wordArray.forEach((item, index) => {
+            const tdHtml = item.element.prop('outerHTML');
+            rowHtml += tdHtml.replace('class="', `class="${item.isSelected ? 'highlight ' : ''}`); // 선택된 단어 유지
+            if ((index + 1) % 6 === 0) {
+                rowHtml += '</tr><tr>';
+            }
+        });
+
+        rowHtml += '</tr>';
+        tableBody.append(rowHtml);
+    }
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function validateTitle(title) {
+        // HTML 태그 존재 여부 체크
+        if (/<[^>]*>/g.test(title)) {
+            alert('HTML 태그는 사용할 수 없습니다.');
+            return false;
+        }
+
+        // 기존 길이 체크
+        if (title.length < 1 || title.length > 50) {
+            alert('제목은 1-50자 사이여야 합니다.');
+            return false;
+        }
+
+        // 허용된 문자만 사용 가능하도록
+        const validPattern = /^[가-힣a-zA-Z0-9\s,.()-_]+$/;
+        if (!validPattern.test(title)) {
+            alert('제목은 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 제목 수정 처리
+    $('#btnEditTitle').on('click', function() {
+        const $titleText = $('#title-text');
+        const currentTitle = $titleText.text();
+
+        $titleText.html('<div class="input-group">' +
+            '<input type="text" class="form-control" id="newTitle" value="' + escapeHtml(currentTitle) + '" maxlength="50">' +
+            '<button class="btn btn-success btn-sm" id="btnSaveTitle">저장</button>' +
+            '<button class="btn btn-secondary btn-sm" id="btnCancelEdit">취소</button>' +
+            '</div>');
+
+        $('#btnSaveTitle').on('click', function() {
+            const newTitle = $('#newTitle').val().trim();
+
+            if (!validateTitle(newTitle)) {
+                // alert('제목은 1-50자의 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+                return;
+            }
+
+            if (newTitle && newTitle !== currentTitle) {
+                const wordBookId = $('#wordBookId').val();
+                const escapedTitle = escapeHtml(newTitle);
+
+                $.ajax({
+                    url: '/WordBook/updateTitle',
+                    method: 'POST',
+                    data: {
+                        wordBookId: wordBookId,
+                        newTitle: escapedTitle
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $titleText.text(newTitle);
+                            loadWordBookInfo();
+                        } else {
+                            alert('제목 변경에 실패했습니다.');
+                            $titleText.text(currentTitle);
+                        }
+                    },
+                    error: function() {
+                        alert('제목 변경 중 오류가 발생했습니다.');
+                        $titleText.text(currentTitle);
+                    }
+                });
+            } else {
+                $titleText.text(currentTitle);
+            }
+        });
+        // 취소 버튼 클릭 시
+        $('#btnCancelEdit').on('click', function() {
+            $titleText.text(currentTitle);
+        });
+    });
 });

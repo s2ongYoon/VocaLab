@@ -3,6 +3,8 @@ package com.dev.vocalab.users;
 import com.dev.vocalab.oauth2.users.CustomOAuth2Users;
 import com.dev.vocalab.oauth2.users.CustomOIDCUsers;
 import com.dev.vocalab.users.details.CustomUsersDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -106,5 +108,47 @@ public class UsersService {
         }
 
         return null;
+    }
+    public void deleteUser(Authentication authentication, HttpServletRequest request) {
+        String userId;
+
+        try {
+
+            if (authentication.getPrincipal() instanceof CustomOIDCUsers) {
+                CustomOIDCUsers oidcUser = (CustomOIDCUsers) authentication.getPrincipal();
+                // 이메일을 사용하여 조회
+                userId = oidcUser.getOAuth2Response().getUserEmail();
+            } else if (authentication.getPrincipal() instanceof CustomOAuth2Users) {
+                CustomOAuth2Users oauth2User = (CustomOAuth2Users) authentication.getPrincipal();
+                // 이메일을 사용하여 조회
+                userId = oauth2User.getOAuth2Response().getUserEmail();
+            } else {
+                // 일반 로그인의 경우
+                userId = authentication.getName();
+            }
+
+            // 사용자 존재 여부 확인
+            UsersEntity usersEntity = usersRepository.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            // 사용자와 관련된 데이터 삭제
+            // 예: 게시글, 댓글 등 연관된 데이터 삭제
+            // itemRepository.deleteAllByUserName(username);
+            // commentRepository.deleteAllByUserName(username);
+
+            // 사용자 계정 삭제
+            usersRepository.delete(usersEntity);
+
+            // 세션 무효화
+            SecurityContextHolder.getContext().setAuthentication(null);
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("회원 탈퇴 처리 중 오류가 발생했습니다.", e);
+        }
+
     }
 }

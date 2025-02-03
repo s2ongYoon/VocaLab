@@ -143,14 +143,18 @@
     <!-- 하단 버튼 -->
     <div class="form-actions text-end">
         <c:if test="${row.replyStatus ne 'DONE'}">
-            <button type="button" class="btn btn-primary"
-                    onclick="location.href='/CS/Edit?boardId=${row.boardId}';">
-                수정
+            <c:if test="${row.userId.toString() eq userSession.userId.toString()}">
+                <button type="button" class="btn btn-primary"
+                        onclick="location.href='/CS/Edit?boardId=${row.boardId}';">
+                    수정
+                </button>
+            </c:if>
+        </c:if>
+        <c:if test="${userSession != null and (row.userId eq userSession.userId or userSession.userRole eq 'ADMIN')}">
+            <button type="button" class="btn btn-danger" onclick="confirmDelete();">
+                삭제
             </button>
         </c:if>
-        <button type="button" class="btn btn-danger" onclick="confirmDelete();">
-            삭제
-        </button>
         <button id="list-button" type="button" class="btn btn-secondary">
             목록
         </button>

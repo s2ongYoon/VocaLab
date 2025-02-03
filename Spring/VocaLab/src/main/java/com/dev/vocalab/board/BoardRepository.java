@@ -24,8 +24,8 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     @Query("SELECT b FROM BoardEntity b JOIN FETCH b.user WHERE b.parentId = :parentId")
     Optional<BoardEntity> findByParentId(@Param("parentId") Integer parentId);
 
-//    검색이 있을시 카테고리를 읽고, 그 카테고리에 해당하며 제목도 검색에 맞춰서 조회
-    @Query("SELECT b FROM BoardEntity b WHERE b.title LIKE :title AND b.category = :category")
+    // 검색어를 안전하게 처리하여 LIKE 조건으로 조회
+    @Query("SELECT b FROM BoardEntity b WHERE b.title LIKE CONCAT('%', :title, '%') AND b.category = :category")
     Page<BoardEntity> findByTitleLikeAndCategory(@Param("title") String title,
                                                  @Param("category") BoardEntity.Category category,
                                                  Pageable pageable);
@@ -43,7 +43,8 @@ Optional<BoardDTO> findBoardWithUserNicknameByBoardId(@Param("boardId") Integer 
                                                  @Param("userId") String userId,
                                                  Pageable pageable);
 
-    @Query("SELECT b FROM BoardEntity b WHERE b.category = :category AND b.user.userId = :userId AND (b.title LIKE :searchWord OR b.content LIKE :searchWord)")
+    // 검색어와 사용자 ID 조건으로 LIKE 조건을 안전하게 처리하여 조회
+    @Query("SELECT b FROM BoardEntity b WHERE b.category = :category AND b.user.userId = :userId AND (b.title LIKE CONCAT('%', :searchWord, '%') OR b.content LIKE CONCAT('%', :searchWord, '%'))")
     Page<BoardEntity> findAllByCategoryAndUserIdAndSearch(@Param("searchWord") String searchWord,
                                                           Pageable pageable,
                                                           @Param("category") BoardEntity.Category category,
