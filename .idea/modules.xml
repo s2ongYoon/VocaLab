@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/VocaLab.iml" filepath="$PROJECT_DIR$/.idea/VocaLab.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VocaLab.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VocaLab.main.iml" />
     </modules>
   </component>
 </project>
