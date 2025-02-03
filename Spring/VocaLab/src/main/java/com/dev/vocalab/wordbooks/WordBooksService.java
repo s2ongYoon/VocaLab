@@ -125,4 +125,21 @@ public class WordBooksService {
     public WordBooksEntity loadWordBookStatus(Integer wordBookId){
         return wordBooksRepository.findByWordBookId(wordBookId);
     }
+
+    public void updateWordBookTitle(Integer wordBookId, String newTitle) {
+        WordBooksEntity wordBook = wordBooksRepository.findByWordBookId(wordBookId);
+        if (wordBook == null) {
+            throw new IllegalArgumentException("단어장을 찾을 수 없습니다.");
+        }
+        // 제목이 비어있는지 확인
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 비워둘 수 없습니다.");
+        }
+        // 제목 길이 제한 (예: 100자)
+        if (newTitle.length() > 100) {
+            throw new IllegalArgumentException("제목이 너무 깁니다. (최대 100자)");
+        }
+        wordBook.setWordBookTitle(newTitle.trim());
+        wordBooksRepository.saveAndFlush(wordBook);
+    }
 }

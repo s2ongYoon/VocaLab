@@ -28,7 +28,12 @@
 
         <div class="col-md-9">
             <div class="py-4">
-                <h1 id="wordbook-title">단어장</h1>
+                <h1 id="wordbook-title" class="d-flex align-items-center justify-content-center">
+                    <span id="title-text">단어장</span>
+                    <button class="btn btn-sm btn-outline-primary ms-2" id="btnEditTitle">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </h1>
                 <div class="action-buttons d-flex justify-content-between align-items-center">
                     <div class="search-section d-flex align-items-center gap-2">
                         <select id="sortSelect" class="form-select" style="width: auto;">

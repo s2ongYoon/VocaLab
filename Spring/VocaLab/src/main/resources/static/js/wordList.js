@@ -25,11 +25,11 @@ $(document).ready(function () {
             type: 'GET',
             data: { wordBookId },
             success: function(response) {
-                // 단어장 제목 영역 업데이트
-                const titleHtml = response.bookmark ?
-                    `${response.wordBookTitle} <i class="fas fa-star text-warning"></i>` :
-                    response.wordBookTitle;
-                $('#wordbook-title').html(titleHtml);
+                var titleHtml = response.wordBookTitle;
+                if (response.bookmark) {
+                    titleHtml = response.wordBookTitle + ' <i class="fas fa-star text-warning"></i>';
+                }
+                $('#title-text').html(titleHtml);
             },
             error: function(xhr) {
                 console.error('단어장 정보를 불러오는데 실패했습니다.');
@@ -279,24 +279,27 @@ $(document).ready(function () {
             alert('최소 한개 이상 선택해주세요.');
             return;
         }
-
-        $.ajax({
-            url: '/WordBook/WordData/remove',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                wordBookId: wordBookId,
-                words: selectedWordList
-            }),
-            success: function (response) {
-                alert('단어가 삭제 되었습니다.');
-                window.location.reload();
-            },
-            error: function (xhr, status, error) {
-                alert('데이터 전송에 실패했습니다.');
-                console.error('AJAX 에러:', error);
-            }
-        });
+        if(confirm('정말 삭제 하시겠습니까?')){
+            $.ajax({
+                url: '/WordBook/WordData/remove',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    wordBookId: wordBookId,
+                    words: selectedWordList
+                }),
+                success: function (response) {
+                    alert('단어가 삭제 되었습니다.');
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('데이터 전송에 실패했습니다.');
+                    console.error('AJAX 에러:', error);
+                }
+            });
+        }else{
+            return;
+        }
     });
     // 버튼 ID와 해당하는 API 엔드포인트를 매핑
     const pageMapping = {
@@ -389,5 +392,89 @@ $(document).ready(function () {
         rowHtml += '</tr>';
         tableBody.append(rowHtml);
     }
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
+    function validateTitle(title) {
+        // HTML 태그 존재 여부 체크
+        if (/<[^>]*>/g.test(title)) {
+            alert('HTML 태그는 사용할 수 없습니다.');
+            return false;
+        }
+
+        // 기존 길이 체크
+        if (title.length < 1 || title.length > 50) {
+            alert('제목은 1-50자 사이여야 합니다.');
+            return false;
+        }
+
+        // 허용된 문자만 사용 가능하도록
+        const validPattern = /^[가-힣a-zA-Z0-9\s,.()-_]+$/;
+        if (!validPattern.test(title)) {
+            alert('제목은 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 제목 수정 처리
+    $('#btnEditTitle').on('click', function() {
+        const $titleText = $('#title-text');
+        const currentTitle = $titleText.text();
+
+        $titleText.html('<div class="input-group">' +
+            '<input type="text" class="form-control" id="newTitle" value="' + escapeHtml(currentTitle) + '" maxlength="50">' +
+            '<button class="btn btn-success btn-sm" id="btnSaveTitle">저장</button>' +
+            '<button class="btn btn-secondary btn-sm" id="btnCancelEdit">취소</button>' +
+            '</div>');
+
+        $('#btnSaveTitle').on('click', function() {
+            const newTitle = $('#newTitle').val().trim();
+
+            if (!validateTitle(newTitle)) {
+                // alert('제목은 1-50자의 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+                return;
+            }
+
+            if (newTitle && newTitle !== currentTitle) {
+                const wordBookId = $('#wordBookId').val();
+                const escapedTitle = escapeHtml(newTitle);
+
+                $.ajax({
+                    url: '/WordBook/updateTitle',
+                    method: 'POST',
+                    data: {
+                        wordBookId: wordBookId,
+                        newTitle: escapedTitle
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $titleText.text(newTitle);
+                            loadWordBookInfo();
+                        } else {
+                            alert('제목 변경에 실패했습니다.');
+                            $titleText.text(currentTitle);
+                        }
+                    },
+                    error: function() {
+                        alert('제목 변경 중 오류가 발생했습니다.');
+                        $titleText.text(currentTitle);
+                    }
+                });
+            } else {
+                $titleText.text(currentTitle);
+            }
+        });
+        // 취소 버튼 클릭 시
+        $('#btnCancelEdit').on('click', function() {
+            $titleText.text(currentTitle);
+        });
+    });
 });

@@ -145,23 +145,89 @@ class WordbookManager {
 
     // 제목 수정 폼 표시
     showTitleEditForm($title, currentTitle) {
-        $title.html(`
-            <div class="input-group">
-                <input type="text" class="form-control" id="newTitle" value="${currentTitle}">
-                <button class="btn btn-success btn-sm" id="btnSaveTitle">저장</button>
-                <button class="btn btn-secondary btn-sm" id="btnCancelEdit">취소</button>
-            </div>
-        `);
+        var html = '<div class="input-group">' +
+            '<input type="text" ' +
+            'class="form-control" ' +
+            'id="newTitle" ' +
+            'value="' + currentTitle + '" ' +
+            'maxlength="50" ' +
+            'pattern="^[가-힣a-zA-Z0-9\\s,.()-_]+$" ' +
+            'required>' +
+            '<button class="btn btn-success btn-sm" id="btnSaveTitle">저장</button>' +
+            '<button class="btn btn-secondary btn-sm" id="btnCancelEdit">취소</button>' +
+            '</div>';
 
-        $('#btnSaveTitle').on('click', () => this.handleTitleSave(currentTitle));
-        $('#btnCancelEdit').on('click', () => this.updateModalUI());
+        $title.html(html);
+
+        // input 이벤트 리스너 추가
+        var $input = $('#newTitle');
+
+        // 실시간 입력 검증
+        $input.on('input', function(e) {
+            var value = e.target.value;
+
+            if (!value.trim()) {
+                $input.addClass('is-invalid');
+                return;
+            }
+
+            var validPattern = /^[가-힣a-zA-Z0-9\s,.()-_]+$/;
+            if (!validPattern.test(value)) {
+                $input.addClass('is-invalid');
+                e.target.setCustomValidity('한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+            } else {
+                $input.removeClass('is-invalid');
+                e.target.setCustomValidity('');
+            }
+        });
+
+        // 키보드 이벤트
+        $input.on('keypress', function(e) {
+            var char = String.fromCharCode(e.keyCode);
+            var validPattern = /[가-힣a-zA-Z0-9\s,.()-_]/;
+
+            if (!validPattern.test(char)) {
+                e.preventDefault();
+            }
+        });
+
+        // paste 이벤트
+        $input.on('paste', function(e) {
+            e.preventDefault();
+            var pastedText = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+            var validPattern = /^[가-힣a-zA-Z0-9\s,.()-_]+$/;
+
+            if (validPattern.test(pastedText)) {
+                document.execCommand('insertText', false, pastedText);
+            }
+        });
+
+        $('#btnSaveTitle').on('click', function() {
+            if ($input[0].checkValidity()) {
+                this.handleTitleSave(currentTitle);
+            } else {
+                $input.addClass('is-invalid');
+            }
+        }.bind(this));
+
+        $('#btnCancelEdit').on('click', function() {
+            this.updateModalUI();
+        }.bind(this));
     }
-
     // 제목 저장 처리
     handleTitleSave(currentTitle) {
         const newTitle = $('#newTitle').val().trim();
         if (newTitle && newTitle !== currentTitle) {
-            this.saveTitleToServer(newTitle);
+            this.saveTitleToServer(newTitle)
+                .then(() => {
+                    // 성공적으로 저장되면 페이지 새로고침
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('제목 저장 실패:', error);
+                    // 실패 시 원래 UI로 복구
+                    this.updateModalUI();
+                });
         } else {
             this.updateModalUI();
         }
@@ -179,7 +245,7 @@ class WordbookManager {
             success: (response) => {
                 if (response.success) {
                     this.selectedWordBook.title = newTitle;
-                    $(`.wordbook-card[data-wordbook-id="${this.selectedWordBook.id}"] h5`).text(newTitle);
+                    $('.wordbook-card[data-wordbook-id="' + this.selectedWordBook.id + '"] h5').text(newTitle);
                     this.updateModalUI();
                 } else {
                     alert('제목 변경에 실패했습니다.');
@@ -228,9 +294,12 @@ class WordbookManager {
     initializeEventListeners() {
         $('#wordbooksContainer').on('click', '.wordbook-card', (e) => {
             const $card = $(e.currentTarget);
+            // 텍스트로부터 직접 제목을 읽어오도록 수정
+            const cardTitle = $card.find('h5').text();
+
             this.selectedWordBook = {
                 id: $card.data('wordbook-id'),
-                title: $card.data('wordbook-title'),
+                title: cardTitle,  // data 속성 대신 실제 텍스트 값 사용
                 bookmark: $card.data('wordbook-bookmark')
             };
             console.log('Selected wordbook:', this.selectedWordBook);

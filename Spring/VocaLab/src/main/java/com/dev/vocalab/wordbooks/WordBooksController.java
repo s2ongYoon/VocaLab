@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -175,4 +176,81 @@ public class WordBooksController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    @PostMapping("/updateTitle")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateWordBookTitle(
+            @RequestParam("wordBookId") Integer wordBookId,
+            @RequestParam("newTitle") String newTitle) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        // 1. 입력값 검증
+        if (!isValidTitle(newTitle)) {
+            response.put("success", false);
+            response.put("message", "유효하지 않은 제목 형식입니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // 2. 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            String currentUserId = AuthenticationUtil.getCurrentUserId();
+
+            // 3. 단어장 존재 및 소유자 확인
+            WordBooksEntity wordbook = wordBooksRepository.findById(wordBookId)
+                    .orElseThrow(() -> new IllegalArgumentException("단어장을 찾을 수 없습니다."));
+
+            if (!wordbook.getUserId().equals(currentUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            // 4. XSS 방지를 위한 이스케이프 처리
+            String sanitizedTitle = HtmlUtils.htmlEscape(newTitle.trim());
+
+            // 5. 제목 업데이트
+            wordBooksService.updateWordBookTitle(wordBookId, sanitizedTitle);
+
+            response.put("success", true);
+            response.put("message", "단어장 제목이 변경되었습니다.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "제목 변경 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    // 제목 유효성 검증 메소드
+    private boolean isValidTitle(String title) {
+        // null 체크
+        if (title == null) {
+            return false;
+        }
+
+        String trimmedTitle = title.trim();
+
+        // 길이 체크
+        if (trimmedTitle.length() < 1 || trimmedTitle.length() > 50) {
+            return false;
+        }
+
+        // HTML 태그 포함 여부 체크
+        if (trimmedTitle.matches(".*<[^>]*>.*")) {
+            return false;
+        }
+
+        // 허용된 문자만 포함되어 있는지 체크
+        return trimmedTitle.matches("^[가-힣a-zA-Z0-9\\s,.()-_]+$");
+    }
+
 }
