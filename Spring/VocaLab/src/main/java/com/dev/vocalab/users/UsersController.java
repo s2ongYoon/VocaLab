@@ -1,12 +1,17 @@
 package com.dev.vocalab.users;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -72,12 +77,48 @@ public class UsersController {
 
         return "redirect:/CS/Main";
     }
-    
 
-    // 로그아웃 테스트용
+
+    // 로그아웃 회원탈퇴 테스트용
     @GetMapping("/test")
-    public String testPage (Authentication authentication){
+    public String testPage(Authentication authentication, Model model) {
+
+        UsersDTO usersDTO = usersService.getUserInfo();
+        Object principal = authentication.getPrincipal();
+
+        model.addAttribute("loginType", usersDTO.getLoginType());
+        model.addAttribute("principal", principal);
+
         return "users/test";
+    }
+
+    // 회원 탈퇴 기능
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public ResponseEntity<String> deleteUser(Authentication authentication, HttpServletRequest request) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        try {
+            //UsersDTO usersDTO = usersService.getUserInfo();
+
+            // OAuth 회원이든 일반 회원이든 동일한 방식으로 삭제 가능
+            // userSocial 필드는 Users 테이블 내에 있으므로 따로 처리할 필요 없음
+
+            // 디버깅 로그
+            String userId = authentication.getName();
+            System.out.println("Attempting to delete user with ID: " + userId);
+            System.out.println("Authentication type: " + authentication.getClass().getName());
+            System.out.println("Principal type: " + authentication.getPrincipal().getClass().getName());
+
+            usersService.deleteUser(authentication, request);
+
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("회원 탈퇴 처리 중 오류가 발생했습니다.");
+        }
     }
 
 }
