@@ -1,6 +1,9 @@
-<%@ page language="java" contentType="text/html;charset=UTF-8"
-         pageEncoding="UTF-8"%>
+<%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<link rel="stylesheet" type="text/css" href="/css/top.css">
+<link rel="stylesheet" type="text/css" href="/css/bottom.css">
+<script src="/js/top.js"></script> <!-- 배너 -->
+<script src="/js/bottom.js"></script> <!-- 배너 -->
 <div class="banner-left">
     <div class="nav-logout-links">
         <c:choose>
@@ -14,7 +17,7 @@
                 </span>
             </c:when>
             <%--        관리자 로그인      --%>
-            <c:when test="${userSession.userId eq 'ADMIN'}">
+            <c:when test="${userSession.userRole eq 'ADMIN'}">
                 <span class="nav-item">
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
@@ -24,7 +27,7 @@
                         <a class="menu" href="/">Contents</a>
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/">AI Essay</a>
+                        <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
                     </div>
                 </div>
@@ -34,7 +37,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage">MyPage</a>
+                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
                         <a class="menu" href="/CS/Inquiry">Admin</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
@@ -47,7 +50,7 @@
                 <div  class="dropdown">
                     <span class="nav-item dropdown" id="contents">Contents</span>
                     <div class="dropdown-menu">
-                        <a class="menu"  href="/">AI Essay</a>
+                        <a class="menu"  onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
                     </div>
                 </div>
@@ -57,7 +60,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage">MyPage</a>
+                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
                 </div>

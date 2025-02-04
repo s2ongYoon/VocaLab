@@ -2,14 +2,17 @@ package com.dev.vocalab.compileRecord;
 
 import com.dev.vocalab.files.FilesEntity;
 import com.dev.vocalab.files.FilesRepository;
+import com.dev.vocalab.users.details.AuthenticationUtil;
 import com.dev.vocalab.wordbooks.WordBooksEntity;
 import com.dev.vocalab.wordbooks.WordBooksRepository;
 import com.dev.vocalab.wordbooks.WordBooksService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,11 +34,19 @@ public class CompileController {
     // [ 단어 선택 페이지 이동 메서드 - WordBookService ] -미완:compileRecord 중 csv파일 불러와서 단어와 뜻 데이터 뿌리기
     @RequestMapping("/result")
     public String resultForm(HttpSession session, Map<String,Object> map, CompileRecordEntity com, FilesEntity files,
-                             HttpServletRequest request, @RequestParam("files")List<MultipartFile> multipartFiles) {
-        System.out.println("resultForm");
-//        String userId = (String) session.getAttribute("sessionId");
-        String userId = "USER001";
+                             HttpServletRequest request, @RequestParam("files")List<MultipartFile> multipartFiles, Model model) {
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
 
+        String userId = AuthenticationUtil.getCurrentUserId();
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        // 사용자 세션 정보를 모델에 추가
+        AuthenticationUtil.addUserSessionToModel(model);
+        System.out.println("resultForm");
         // < compilePro - insert compileRecord, insert originalFile, insert resultFile  >
         com.setUserId(userId);
         List<Map<String, Object>> response = compilePro(com, files, multipartFiles);
@@ -74,16 +85,15 @@ public class CompileController {
     @ResponseBody
     public WordBooksEntity addWordbookAjax(HttpSession session, @RequestParam("wordBookTitle") String wordBookTitle) {
         System.out.println("addWordbookAjax");
-//        String userId = (String) session.getAttribute("sessionId");
-//        if(userId == null){
-//            model.addAttribute("msg", "로그인이 필요합니다");
-//			model.addAttribute("targetURL", "/vocalab/login"); //<------------------------------------수정) 로그인 페이지 경로
-//			return "forward";
-//        } else if(!session.getAttribute("sId").equals("admin1234")) {
-//			model.addAttribute("msg", "잘못된 접근 입니다.");
-//			return "fail_back";
-//		}
-        String userId = "USER001";
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            throw new AuthenticationException("인증이 필요합니다.") {};
+        }
+
+        String userId = AuthenticationUtil.getCurrentUserId();
+        if (userId == null) {
+            throw new AuthenticationException("인증이 필요합니다.") {};
+        }
         WordBooksEntity wordBook = new WordBooksEntity();
         wordBook.setUserId(userId);
         wordBook.setWordBookTitle(wordBookTitle);
@@ -101,9 +111,14 @@ public class CompileController {
     public String removeWordbookAjax(HttpSession session, @RequestBody Map<String, List<String>> map) {
         System.out.println("removeWordbookAjax");
         System.out.println("map" + map.toString());
-
-//        String userId = (String) session.getAttribute("sessionId");
-        String userId = "USER001";
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            throw new AuthenticationException("인증이 필요합니다.") {};
+        }
+        String userId = AuthenticationUtil.getCurrentUserId();
+        if (userId == null) {
+            throw new AuthenticationException("인증이 필요합니다.") {};
+        }
         String result = "";
 
         List<String> wordBookIds = map.get("ids");
@@ -125,16 +140,14 @@ public class CompileController {
         System.out.println("wordBookId" + wordBookId);
         System.out.println("word" + word);
         System.out.println("meaning" + meaning);
-//      < 로그인 후 - 기능 사용 가능 : 일단 로그아웃이면 로그인 페이지로 이동 >
-        String userId = (String) session.getAttribute("sessionId");
-//        if(userId == null){
-//            model.addAttribute("msg", "로그인이 필요합니다");
-//			model.addAttribute("targetURL", "/vocalab/login"); //<------------------------------------수정) 로그인 페이지 경로
-//			return "forward";
-//        } else if(!session.getAttribute("sId").equals("admin1234")) {
-//			model.addAttribute("msg", "잘못된 접근 입니다.");
-//			return "fail_back";
-//		}
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String userId = AuthenticationUtil.getCurrentUserId();
+        if (userId == null) {
+            return "redirect:/login";
+        }
     //  < 저장할 데이터 csv로 저장 >
         wordBooksService.addWords(userId, wordBookId, word, meaning);
 

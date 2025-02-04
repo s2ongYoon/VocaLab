@@ -10,8 +10,6 @@
     <title>Compile Result</title>
     <link rel="stylesheet" href="/css/global.css"> <%-- 글로벌 CSS --%>
     <link rel="stylesheet" href="/css/compile/compile_result.css"> <%-- 컴파일 결과 전용 CSS --%>
-    <link rel="stylesheet" type="text/css" href="/css/top.css">
-    <link rel="stylesheet" type="text/css" href="/css/bottom.css">
     <%-- jQuery CDN --%>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/compile/compile_result.js"></script> <%-- 컴파일 결과 전용 JS --%>

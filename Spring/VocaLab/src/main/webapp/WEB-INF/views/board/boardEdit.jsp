@@ -17,22 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-
-    <style>
-        .board.write-view {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .note-editor {
-            margin-top: 1rem;
-        }
-        .form-actions {
-            margin-top: 1rem;
-            text-align: right;
-        }
-    </style>
-
+    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
     <script>
         $(document).ready(function() {
             // content를 불러와서 필터링
@@ -167,13 +152,17 @@
     </script>
 </head>
 <body>
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
 <div class="board write-view">
     <div class="card">
         <div class="card-header bg-white">
             <h5 class="mb-0">게시물 수정</h5>
         </div>
         <div class="card-body">
-            <form name="frm" method="post" action="/CS/Update" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form name="frm" method="post" action="/CS/Update" enctype="multipart/form-data" class="board-editor needs-validation" novalidate>
                 <!-- Hidden inputs -->
                 <input type="hidden" name="replyStatus" value="${row.replyStatus}"/>
                 <input type="hidden" name="boardId" value="${row.boardId}"/>
@@ -196,7 +185,7 @@
                 </div>
 
                 <!-- Form actions -->
-                <div class="form-actions">
+                <div class="board-form-actions">
                     <button type="button" class="btn btn-secondary"
                             onclick="location.href='/CS/' + boardCat;">
                         목록
@@ -208,6 +197,9 @@
             </form>
         </div>
     </div>
+</div>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
 </div>
 </body>
 </html>
