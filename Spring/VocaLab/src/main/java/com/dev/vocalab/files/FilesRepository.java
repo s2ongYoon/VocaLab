@@ -19,9 +19,9 @@ public interface FilesRepository extends JpaRepository<FilesEntity, Long> {
     @Transactional
     void deleteByTableIdAndCategory(Integer tableId, FilesEntity.Category category);
     // [ compile_result.jsp 단어장 삭제 ]
-    void deleteByTableIdAndCategoryAndUserId(int wordbookId, String category, String userId);
+    void deleteByTableIdAndCategoryAndUserId(int wordbookId, FilesEntity.Category category, String userId);
     // [ 단어 추가시 파일 존재 여부 확인 ]
-    FilesEntity findByUserIdAndTableIdAndCategory(String userId, int tableId, String category);
+    FilesEntity findByUserIdAndTableIdAndCategory(String userId, int tableId, FilesEntity.Category category);
 
     List<FilesEntity> findByTableIdAndCategoryAndUserId(Integer tableId, FilesEntity.Category category, String userId);
     // [ home.jsp 단어 추출 기록 ]

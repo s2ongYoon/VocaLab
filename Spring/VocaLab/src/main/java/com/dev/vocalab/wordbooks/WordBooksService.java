@@ -161,7 +161,7 @@ public class WordBooksService {
             System.out.println("filesEntityList: " + filesEntityList);
             System.out.println("filesEntityList size: " + filesEntityList.size());
             if (filesEntityList.size() > 0) {
-                filesRepository.deleteByTableIdAndCategoryAndUserId(wordBookId,"WORD", userId);
+                filesRepository.deleteByTableIdAndCategoryAndUserId(wordBookId, FilesEntity.Category.WORD, userId);
                 return "true";
             }
             return "true";
@@ -177,7 +177,7 @@ public class WordBooksService {
         WordBooksEntity wordBook =  wordBooksRepository.findByWordBookId(wordBookId);
         String wordBookTitle = wordBook.getWordBookTitle();
         System.out.println(userId + ", " + wordBookId);
-        FilesEntity csvfiles = filesRepository.findByUserIdAndTableIdAndCategory(userId, wordBookId, "WORD");
+        FilesEntity csvfiles = filesRepository.findByUserIdAndTableIdAndCategory(userId, wordBookId, FilesEntity.Category.WORD);
         System.out.println("wordBookTitle: " + wordBookTitle);
         System.out.println("csvfiles: " + csvfiles);
 

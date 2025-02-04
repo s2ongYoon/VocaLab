@@ -16,26 +16,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-
-    <style>
-        .board.write-view {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .note-editor {
-            margin-top: 1rem;
-        }
-        .form-actions {
-            margin-top: 1rem;
-            text-align: right;
-        }
-    </style>
-
+    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({
-                height: 800,
+                height: 500,
                 lang: 'ko-KR',
                 toolbar: [
                     ['fontsize', ['fontsize']],
@@ -154,6 +139,10 @@
     </script>
 </head>
 <body>
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
 <div class="board write-view">
     <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation">
         <input type="hidden" name="replyStatus" value="NONE"/>
@@ -197,6 +186,9 @@
             </button>
         </div>
     </form>
+</div>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
 </div>
 </body>
 </html>

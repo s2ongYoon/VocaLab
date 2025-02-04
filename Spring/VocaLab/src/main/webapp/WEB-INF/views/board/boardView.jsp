@@ -13,45 +13,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-    <style>
-        .board.detail-view {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .content-area {
-            min-height: 300px;
-            padding: 1rem;
-            white-space: pre-wrap;
-        }
-        .nav-tabs {
-            border-bottom: 1px solid #dee2e6;
-        }
-        .nav-tabs .nav-link {
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: #495057;
-        }
-        .nav-tabs .nav-link.active {
-            border-bottom: 2px solid #0d6efd;
-            color: #0d6efd;
-        }
-        .content-area {
-            min-height: 300px;
-            padding: 1rem;
-            white-space: pre-wrap;
-            overflow: hidden; /* 넘치는 콘텐츠 숨김 */
-        }
-
-        .content-area img {
-            max-width: 100%; /* 부모 요소의 너비를 넘지 않도록 */
-            height: auto; /* 비율 유지 */
-            display: block; /* 인라인 요소를 블록으로 변경 */
-            margin: 1rem auto; /* 상하 여백과 중앙 정렬 */
-        }
-    </style>
-
+    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
     <script>
         function confirmDelete() {
             if (confirm("정말 삭제하시겠습니까?")) {
@@ -77,9 +39,13 @@
     </script>
 </head>
 <body>
-<div class="board detail-view">
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
+<div class="container">
     <!-- 상단 탭 메뉴 -->
-    <ul class="nav nav-tabs mb-4">
+    <ul class="board-tabs">
         <li class="nav-item" style="width: 33.33%">
             <a class="nav-link text-center ${row.category eq 'NOTICE' ? 'active' : ''}" href="/CS/Notice">공지사항</a>
         </li>
@@ -90,7 +56,7 @@
             <a class="nav-link text-center ${row.category eq 'INQUIRY' ? 'active' : ''}" href="/CS/Inquiry">1:1 문의</a>
         </li>
     </ul>
-
+    <div class="board">
     <!-- 게시글 내용 -->
     <div class="card mb-4">
         <div class="card-header bg-white">
@@ -130,7 +96,7 @@
                     </small>
                 </div>
             </div>
-            <div class="content-area border rounded bg-light">
+            <div class="content-area">
                 ${row.content}
             </div>
         </div>
@@ -141,7 +107,7 @@
     </form>
 
     <!-- 하단 버튼 -->
-    <div class="form-actions text-end">
+    <div class="board-form-actions text-end">
         <c:if test="${row.replyStatus ne 'DONE'}">
             <c:if test="${row.userId.toString() eq userSession.userId.toString()}">
                 <button type="button" class="btn btn-primary"
@@ -162,7 +128,7 @@
 
     <!-- 답변 영역 -->
     <c:if test="${row.category eq 'INQUIRY'}">
-        <div class="reply-area mb-4">
+        <div class="board-reply-area">
             <c:if test="${row.replyStatus eq 'NONE'}">
                 <c:import url="/WEB-INF/views/board/boardReplyWrite.jsp" />
             </c:if>
@@ -171,6 +137,10 @@
             </c:if>
         </div>
     </c:if>
+    </div>
+</div>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
 </div>
 </body>
 </html>

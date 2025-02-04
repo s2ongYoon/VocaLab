@@ -25,60 +25,16 @@
             });
         });
     </script>
-    <style>
-        .board table tbody tr {
-            cursor: pointer;
-        }
-
-        .board table tbody tr:hover {
-            background-color: rgba(0, 0, 0, .075);
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .board table tbody tr:active {
-            background-color: rgba(0, 0, 0, .1);
-        }
-
-        .nav-tabs {
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .nav-tabs .nav-link {
-            margin-bottom: -1px;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: #495057;
-        }
-
-        .nav-tabs .nav-link:hover {
-            border-color: transparent;
-            border-bottom: 2px solid #0d6efd;
-        }
-
-        .nav-tabs .nav-link.active {
-            border-bottom: 2px solid #0d6efd;
-            color: #0d6efd;
-        }
-
-        .search-bar-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-bar-group .form-control {
-            flex: 1;
-        }
-
-        .search-bar-group button {
-            white-space: nowrap;
-        }
-    </style>
+    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
 </head>
 <body>
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
 <div class="container py-4">
     <!-- 탭 메뉴 -->
-    <ul class="nav nav-tabs mb-4">
+    <ul class="board-tabs">
         <li class="nav-item" style="width: 33.33%">
             <a class="nav-link text-center ${boardCat eq 'Notice' ? 'active' : ''}" href="/CS/Notice">공지사항</a>
         </li>
@@ -141,7 +97,7 @@
     </div>
 
     <!-- 검색 및 작성 버튼 -->
-    <div class="search-bar-group d-flex align-items-center gap-2">
+    <div class="board-search-group">
         <c:if test="${not empty userSession}">
             <button type="button" class="btn btn-primary" onclick="location.href='/CS/Write';">
                 작성
@@ -153,6 +109,9 @@
             <button type="submit" class="btn btn-outline-primary ms-2">검색</button>
         </form>
     </div>
+</div>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
 </div>
 </body>
 </html>

@@ -49,4 +49,10 @@ public class FilesEntity {
     public enum FileType {
         FILE, IMAGE
     }
+    // insert 시 업로드 날짜 자동 입력
+    @PrePersist
+    protected void onPrePersist() {
+        //작성일 : 현재시각으로 설정
+        this.uploadedAt = LocalDateTime.now();
+    }
 }
