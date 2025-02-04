@@ -1,0 +1,50 @@
+/* 공통 스타일 */
+body {
+    font-family: Arial, sans-serif;
+}
+
+.mypage-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.left-banner {
+    width: 100px;
+    background-color: #f4f4f4;
+    padding-top: 20px;
+    padding-right: 10px;
+}
+
+.left-banner .menu-item {
+    cursor: pointer;
+    padding: 10px;
+    list-style: none;
+}
+
+.left-banner .menu-item:hover {
+    background-color: #e0e0e0;
+}
+
+.left-banner .menu-item.active {
+    background-color: #d0d0d0;
+}
+
+.right-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+select-all {
+    margin-bottom: 20px;
+}
+
+.withdraw {
+    font-size: 11px;
+    text-decoration: underline;
+    margin-top: 10px;
+}

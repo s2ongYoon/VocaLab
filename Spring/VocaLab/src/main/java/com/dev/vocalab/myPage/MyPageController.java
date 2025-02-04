@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MyPageController {
 
-    @RequestMapping("/")
-    public String myPage() {
+    @RequestMapping("/compileHistory")
+    public String myPageRecord() {
 
         // 인증 확인
         if (!AuthenticationUtil.isAuthenticated()) {
@@ -17,7 +17,31 @@ public class MyPageController {
         }
 
 
-        return "myPage";
+        return "myPageHistory";
+    }
+
+    @RequestMapping("/userInformation")
+    public String myPageUserInfo() {
+
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+
+        return "myPageUserInfo";
+    }
+
+    @RequestMapping("/userModify")
+    public String myPageUserModify() {
+
+        // 인증 확인
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+
+        return "myPageUserModify";
     }
 
 } // class
