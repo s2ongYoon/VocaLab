@@ -40,6 +40,9 @@ public class UsersService {
         users.setUserPassword(passwordEncoder.encode(userPassword));
         users.setUserNickname(userNickname);
         users.setUserEmail(userEmail);
+        users.setUserRole(UsersEntity.UserRole.USER);
+        users.setUserSocial(UsersEntity.UserSocial.NONE);
+        users.setUserStatus(UsersEntity.UserStatus.NORMAL);
 
         // 생년월일 형식 변환 (YYYY-MM-DD)
         String birthDate = String.format("%s-%s-%s",
