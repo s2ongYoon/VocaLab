@@ -31,7 +31,7 @@
 
                 <div  class="dropdown">
                     <span class="nav-item dropdown">
-                        <b>${userSession.userNickName}</b>&nbsp;님
+                        <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage/compileRecord">MyPage</a>
@@ -54,7 +54,7 @@
 
                 <div  class="dropdown">
                     <span class="nav-item dropdown" id="username">
-                        <b>${userSession.userNickName}</b>&nbsp;님
+                        <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage/compileRecord">MyPage</a>
