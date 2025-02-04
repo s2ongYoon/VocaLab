@@ -60,8 +60,10 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.security:spring-security-oauth2-client'
 
-//    Jsoup
-    implementation 'org.jsoup:jsoup:1.15.4'
+//      json
+    implementation 'org.json:json:20211205'
+//          Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
 
 tasks.named('test') {
