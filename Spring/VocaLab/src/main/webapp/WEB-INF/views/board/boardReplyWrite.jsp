@@ -17,21 +17,7 @@
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
-    <style>
-        .board.write-view {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .note-editor {
-            margin-top: 1rem;
-        }
-        .form-actions {
-            margin-top: 1rem;
-            text-align: right;
-        }
-    </style>
-
+    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({
@@ -158,7 +144,6 @@
     <c:if test="${userSession.userRole eq 'ADMIN'}">
         <form name="frm" method="post" action="/CS/Post" enctype="multipart/form-data" class="needs-validation">
             <div class="mb-3">
-                <label for="title" class="form-label">제목</label>
                 <input type="text" class="form-control" id="title" name="title"
                        placeholder="제목을 입력하세요" required>
                 <div class="invalid-feedback">

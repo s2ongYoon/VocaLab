@@ -48,7 +48,7 @@
 
     <!-- 게시판 테이블 -->
     <div class="board">
-        <table class="table">
+        <table class="table table-hover">
             <thead class="table-light">
             <tr>
                 <th style="width: 10%">No</th>

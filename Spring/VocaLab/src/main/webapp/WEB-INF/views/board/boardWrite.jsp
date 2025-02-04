@@ -20,7 +20,7 @@
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({
-                height: 800,
+                height: 500,
                 lang: 'ko-KR',
                 toolbar: [
                     ['fontsize', ['fontsize']],

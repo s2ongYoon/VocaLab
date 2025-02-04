@@ -26,7 +26,7 @@
             // 필터링된 content를 summernote에 설정
             $('#summernote').val(content);
             $('#summernote').summernote({
-                height: 800,
+                height: 400,
                 lang: 'ko-KR',
                 toolbar: [
                     ['fontsize', ['fontsize']],
