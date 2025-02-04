@@ -18,4 +18,12 @@ public interface FilesRepository extends JpaRepository<FilesEntity, Long> {
 //    Board 에서 내용 지울때 image file도 같이 file 테이블에서 지우기 위해 부르는 메서드
     @Transactional
     void deleteByTableIdAndCategory(Integer tableId, FilesEntity.Category category);
+    // [ compile_result.jsp 단어장 삭제 ]
+    void deleteByTableIdAndCategoryAndUserId(int wordbookId, String category, String userId);
+    // [ 단어 추가시 파일 존재 여부 확인 ]
+    FilesEntity findByUserIdAndTableIdAndCategory(String userId, int tableId, String category);
+
+    List<FilesEntity> findByTableIdAndCategoryAndUserId(Integer tableId, FilesEntity.Category category, String userId);
+    // [ home.jsp 단어 추출 기록 ]
+    List<FilesEntity> findByUserId(String userId);
 }

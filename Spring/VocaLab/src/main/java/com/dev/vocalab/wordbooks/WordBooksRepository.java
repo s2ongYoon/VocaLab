@@ -18,4 +18,8 @@ public interface WordBooksRepository extends JpaRepository<WordBooksEntity, Inte
     List<WordBooksEntity> findByWordBookTitleContainingIgnoreCase(String wordBookTitle);
 
     WordBooksEntity findByWordBookId(Integer wordBookId);
+    // [ 사용자 단어장 삭제 ]
+    void deleteByWordBookId(int wordbookId);
+
+    WordBooksEntity findByWordBookId(int wordBookId);
 }

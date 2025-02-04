@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/CS")
+@RequestMapping({"/CS","/cs"})
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {

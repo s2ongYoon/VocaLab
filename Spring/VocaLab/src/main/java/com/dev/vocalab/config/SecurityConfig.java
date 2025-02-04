@@ -164,10 +164,10 @@ public class SecurityConfig {
 
                 // OAuth2 제공자의 로그아웃 페이지로 리다이렉트
 //                response.sendRedirect(logoutUrl);
-                response.sendRedirect("/login");
+                response.sendRedirect("/");
             } else {
                 // 일반 로그인 사용자인 경우
-                response.sendRedirect("/login");
+                response.sendRedirect("/");
             }
         }
     }

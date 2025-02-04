@@ -40,7 +40,7 @@ public class UsersController {
     @GetMapping("/register")
     public String registerPage(Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
-            return "redirect:/CS/Main";
+            return "redirect:/";
         }
         return "users/registration";
     }
@@ -72,10 +72,10 @@ public class UsersController {
 
             model.addAttribute("principal", principal);
 
-            return "redirect:/CS/Main";
+            return "redirect:/";
         }
 
-        return "redirect:/CS/Main";
+        return "redirect:/";
     }
 
 
