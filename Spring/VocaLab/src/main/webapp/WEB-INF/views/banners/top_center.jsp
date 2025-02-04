@@ -6,7 +6,7 @@
     <div class="nav-logout-links">
         <c:choose>
             <%--        로그아웃       --%>
-            <c:when test="${empty sessionScope.sessionId}">
+            <c:when test="${empty userSession.userId}">
                 <span class="nav-item">
                     <a class="menu" href="/login">Login</a>
                 </span>
@@ -15,7 +15,7 @@
                 </span>
             </c:when>
             <%--        관리자 로그인      --%>
-            <c:when test="${sessionScope.sessionRole eq 'ADMIN'}">
+            <c:when test="${userSession.userRole eq 'ADMIN'}">
                 <span class="nav-item">
                     <a class="menu" href="/">Vocabulary</a>
                 </span>
@@ -29,7 +29,7 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown"><b>${sessionScope.sessionNickName}</b>&nbsp;님</span>
+                    <span class="nav-item dropdown"><b>${userSession.userNickName}</b>&nbsp;님</span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage">MyPage</a>
                         <a class="menu" href="/">Admin</a>
@@ -38,7 +38,7 @@
                 </div>
             </c:when>
             <%--      일반회원 로그인     --%>
-            <c:when test="${sessionScope.sessionRole eq 'USER'}">
+            <c:when test="${userSession.userRole eq 'USER'}">
                 <span class="nav-item" id="vocabulary">Vocabulary</span>
 
                 <div  class="dropdown">
@@ -50,7 +50,7 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown" id="username"><b>${sessionScope.sessionNickName}</b>&nbsp;님</span>
+                    <span class="nav-item dropdown" id="username"><b>${userSession.userNickName}</b>&nbsp;님</span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage">MyPage</a>
                         <a class="menu" href="/">Logout</a>

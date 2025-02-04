@@ -28,18 +28,18 @@
             <!-- 본문 내용 -->
             <div class="container">
                 <!--회원일 경우 검색 기록이 표시됨 -->
-                <div class="compile-record">
-                    <c:if test="${not empty sessionScope.sessionId || not empty compileDtoList}">
-                        <c:forEach var="com" items="${compileDtoList}">
-                            <c:forEach var="file" items="${com.fileRecordList}" varStatus="status">
-                                <input type="hidden" name="file${status.index}" value="${file.fileId}">
-                            </c:forEach>
-                            <button class="user-record">
-                                    ${com.createAt}
-                            </button>
-                        </c:forEach>
-                    </c:if>
-                </div>
+<%--                <div class="compile-record">--%>
+<%--                    <c:if test="${not empty userSession.sessionId || not empty compileDtoList}">--%>
+<%--                        <c:forEach var="com" items="${compileDtoList}">--%>
+<%--                            <c:forEach var="file" items="${com.fileRecordList}" varStatus="status">--%>
+<%--                                <input type="hidden" name="file${status.index}" value="${file.fileId}">--%>
+<%--                            </c:forEach>--%>
+<%--                            <button class="user-record">--%>
+<%--                                    ${com.createAt}--%>
+<%--                            </button>--%>
+<%--                        </c:forEach>--%>
+<%--                    </c:if>--%>
+<%--                </div>--%>
 
                 <!-- form 태그 -->
                 <form class="input-group" name="compileForm" action="compile/result" method="post" enctype="multipart/form-data">
