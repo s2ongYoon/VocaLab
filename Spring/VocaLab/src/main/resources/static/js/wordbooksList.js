@@ -41,14 +41,37 @@ class WordbookManager {
 
     // 단어장 삭제 처리
     handleWordbookDelete() {
-        if (this.selectedWordBook && confirm(MESSAGES.DELETE_CONFIRM(this.selectedWordBook.title))) {
+        const selectedWordBook = this.selectedWordBook; // 현재 선택된 단어장
+
+        if (!selectedWordBook) {
+            alert("삭제할 단어장을 선택하세요.");
+            return;
+        }
+
+        // 삭제 확인 메시지
+        const confirmMessage = selectedWordBook.title + "을(를) 삭제하시겠습니까? 단어장의 단어 데이터도 함께 삭제됩니다.";
+
+        if (confirm(confirmMessage)) {
+            // AJAX 요청
             $.ajax({
-                url: '/api/wordbook/' + this.selectedWordBook.id,
-                method: 'DELETE',
-                success: () => {
-                    alert(MESSAGES.DELETE_SUCCESS(this.selectedWordBook.title));
-                    $('#wordbookModal').modal('hide');
-                    $(`[data-id="${this.selectedWordBook.id}"]`).remove();
+                url: "/compile/removeWordbook", // 서버의 삭제 처리 URL
+                type: "POST",
+                contentType: "application/json", // JSON 형태로 데이터 전송
+                data: JSON.stringify({ids: [selectedWordBook.id]}),
+                success: function(response) {
+                    console.log(response);
+                    if(response){
+                        alert("단어장이 삭제되었습니다."); // 성공 메시지
+                        // 화면에서 해당 단어장 요소 제거
+                        $('[data-wordbook-id="' + selectedWordBook.id + '"]').remove();
+                        $('#wordbookModal').modal('hide'); // 모달 닫기
+                    } else {
+                        alert("삭제 실패");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("단어장 삭제에 실패했습니다."); // 오류 메시지
+                    console.error(error); // 오류 로그
                 }
             });
         }

@@ -7,97 +7,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입</title>
-    <!--    <link rel="stylesheet" type="text/css" href="/css/login/styles2.css">-->
-    <!--    <link href="/main.css" rel="stylesheet">-->
+    <title>회원가입 - VocaLab</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/registration.css" rel="stylesheet">
 </head>
 <body>
-<h1>Sign in</h1>
-<form action="/register" method="post">
-    <!-- userName(Id) 입력란 -->
-    <div class="userId">
-        <label for="userId">ID</label>
-        <input type="text" id="userId" name="userId" placeholder="Enter Your ID" autocomplete="off" required>
+<div class="register-wrap">
+    <div class="register-header">
+        <a href="/" class="logo-link">
+            <img src="/images/logoEx1.png" alt="VocaLab" height="100">
+        </a>
     </div>
-    <!-- Password 입력란 -->
-    <div class="userPassword">
-        <label for="userPassword">Password</label>
-        <input type="password" id="userPassword" name="userPassword" placeholder="Enter Your Password" autocomplete="off" required>
-    </div>
-    <!-- userName(이름) 입력란 -->
-    <div class="userName">
-        <label for="userName">Name</label>
-        <input type="text" id="userName" name="userName" placeholder="Enter Your Name" autocomplete="off" required>
-    </div>
-    <!-- userNickname(닉네임) 입력란 -->
-    <div class="userNickname">
-        <label for="userNickname">NickName</label>
-        <input type="text" id="userNickname" name="userNickname" placeholder="Enter Your NickName" autocomplete="off" required>
-    </div>
-    <!-- userEmail(이메일) 입력란 유효성검사 필요-->
-    <div class="userEmail">
-        <label for="userEmail">Email</label>
-        <input type="text" id="userEmail" name="userEmail" placeholder="Enter Your userEmail" autocomplete="off" required>
-    </div>
-    <!-- birthDate(생년월일) 입력란 -->
-<%--    <div class="birthDateAndGender">--%>
-<%--        <label for="birthDate">BirthDateAndSex</label>--%>
-<%--        <input type="text" id="birthDate" name="birthDate" placeholder="Enter Your birthDate" autocomplete="off" required>--%>
-<%--        <input type="number" id="gender" name="gender" placeholder="Enter the first digit of the last 7 digits of your Resident Registration Number." autocomplete="off" required>--%>
-<%--    </div>--%>
-    <div>
-        <label>Birth Date and Gender</label>
-        <div>
-            <!-- 년도 입력 -->
-            <input type="text" id="year" name="year" list="yearList" placeholder="YYYY" maxlength="4" pattern="[0-9]{4}">
-            <datalist id="yearList">
-                <script>
-                    const currentYear = new Date().getFullYear();
-                    for(let i = currentYear; i >= 1900; i--) {
-                        document.write(`<option value="${i}">`);
-                    }
-                </script>
-            </datalist>
 
-            <!-- 월 입력 -->
-            <input type="text" id="month" name="month" list="monthList" placeholder="MM" maxlength="2" pattern="[0-9]{1,2}">
-            <datalist id="monthList">
-                <script>
-                    for(let i = 1; i <= 12; i++) {
-                        const month = i.toString().padStart(2, '0');
-                        document.write(`<option value="${month}">`);
-                    }
-                </script>
-            </datalist>
+    <div class="register-content">
+        <div class="register-form-wrap">
+            <h2 class="register-title">회원가입</h2>
+            <form action="/register" method="post">
+                <div class="input-group">
+                    <label for="userId">아이디</label>
+                    <input type="text" id="userId" name="userId" class="input-field" placeholder="아이디를 입력하세요" autocomplete="off" required>
+                </div>
 
-            <!-- 일 입력 -->
-            <input type="text" id="day" name="day" list="dayList" placeholder="DD" maxlength="2" pattern="[0-9]{1,2}">
-            <datalist id="dayList">
-                <script>
-                    for(let i = 1; i <= 31; i++) {
-                        const day = i.toString().padStart(2, '0');
-                        document.write(`<option value="${day}">`);
-                    }
-                </script>
-            </datalist>
-        </div>
+                <div class="input-group">
+                    <label for="userPassword">비밀번호</label>
+                    <input type="password" id="userPassword" name="userPassword" class="input-field" placeholder="비밀번호를 입력하세요" autocomplete="off" required>
+                </div>
 
-        <!-- 성별 선택 -->
-        <div>
-            <label>Gender</label>
-            <label>
-                <input type="radio" name="gender" value="1" required>
-                Male
-            </label>
-            <label>
-                <input type="radio" name="gender" value="2" required>
-                Female
-            </label>
+                <div class="input-group">
+                    <label for="userName">이름</label>
+                    <input type="text" id="userName" name="userName" class="input-field" placeholder="이름을 입력하세요" autocomplete="off" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="userNickname">닉네임</label>
+                    <input type="text" id="userNickname" name="userNickname" class="input-field" placeholder="닉네임을 입력하세요" autocomplete="off" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="userEmail">이메일</label>
+                    <input type="email" id="userEmail" name="userEmail" class="input-field" placeholder="이메일을 입력하세요" autocomplete="off" required>
+                </div>
+
+                <div class="birth-gender-group">
+                    <label>생년월일</label>
+                    <div class="birth-inputs">
+                        <input type="text" id="year" name="year" class="birth-field" placeholder="YYYY" maxlength="4" pattern="[0-9]{4}" required>
+                        <input type="text" id="month" name="month" class="birth-field" placeholder="MM" maxlength="2" pattern="[0-9]{1,2}" required>
+                        <input type="text" id="day" name="day" class="birth-field" placeholder="DD" maxlength="2" pattern="[0-9]{1,2}" required>
+                    </div>
+                </div>
+
+                <div class="gender-group">
+                    <label>성별</label>
+                    <div class="gender-options">
+                        <label class="gender-label">
+                            <input type="radio" name="gender" value="1" required>
+                            <span>남성</span>
+                        </label>
+                        <label class="gender-label">
+                            <input type="radio" name="gender" value="2" required>
+                            <span>여성</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-btn">가입하기</button>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Submit 버튼 -->
-    <button type="submit" class="submit-btn">Sign up</button>
-</form>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

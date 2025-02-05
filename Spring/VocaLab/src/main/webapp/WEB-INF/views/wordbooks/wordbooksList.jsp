@@ -63,18 +63,27 @@
         </div>
     </div>
     <div id="wordbooksContainer" class="wordbook-container">
-        <c:forEach items="${wordbooks}" var="wordbook">
-            <div class="wordbook-card"
-                 data-wordbook-id="${wordbook.wordBookId}"
-                 data-wordbook-title="${wordbook.wordBookTitle}"
-                 data-wordbook-bookmark="${wordbook.bookmark}">
-                <h5>${wordbook.wordBookTitle}</h5>
-                <p>생성일: ${wordbook.createdAt}</p>
-                <c:if test="${wordbook.bookmark}">
-                    <span class="badge bg-warning text-dark">즐겨찾기</span>
-                </c:if>
-            </div>
-        </c:forEach>
+        <c:choose>
+            <c:when test="${empty wordbooks}">
+                <div class="w-100 text-center py-5">
+                    <h4 class="text-muted">아직 단어장이 존재하지 않습니다.</h4>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <c:forEach items="${wordbooks}" var="wordbook">
+                    <div class="wordbook-card"
+                         data-wordbook-id="${wordbook.wordBookId}"
+                         data-wordbook-title="${wordbook.wordBookTitle}"
+                         data-wordbook-bookmark="${wordbook.bookmark}">
+                        <h5>${wordbook.wordBookTitle}</h5>
+                        <p>생성일: ${wordbook.createdAt}</p>
+                        <c:if test="${wordbook.bookmark}">
+                            <span class="badge bg-warning text-dark">즐겨찾기</span>
+                        </c:if>
+                    </div>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
     </div>
 </div>
 <!-- 모달 -->

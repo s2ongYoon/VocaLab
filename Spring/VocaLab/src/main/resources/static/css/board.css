@@ -15,6 +15,16 @@ body {
     background-color: #f9f9f9;
 }
 
+/* 스크롤바 숨기기 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 /* 탭 네비게이션 */
 .board-tabs {
     display: flex;

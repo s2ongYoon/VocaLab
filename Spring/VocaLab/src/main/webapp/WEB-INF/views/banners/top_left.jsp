@@ -21,7 +21,6 @@
                 <span class="nav-item">
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
-
                 <div  class="dropdown">
                     <span class="nav-item dropdown">
                         <a class="menu" href="/">Contents</a>
@@ -45,8 +44,9 @@
             </c:when>
             <%--      일반회원 로그인     --%>
             <c:when test="${userSession.userRole eq 'USER'}">
-                <span class="nav-item" id="vocabulary">Vocabulary</span>
-
+                <span class="nav-item">
+                    <a class="menu" href="/WordBook/List">Vocabulary</a>
+                </span>
                 <div  class="dropdown">
                     <span class="nav-item dropdown" id="contents">Contents</span>
                     <div class="dropdown-menu">
