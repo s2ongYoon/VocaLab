@@ -35,9 +35,5 @@ public class HomeController {
         }
         return "home";
     }
-    @GetMapping("/2")
-    public String home2(HttpSession session) {
 
-        return "home2";
-    }
 }

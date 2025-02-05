@@ -30,7 +30,8 @@ button:hover {
     background-color: #979595;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"],
+input[type="email"], input[type="date"]{
     height: 20px;
     font-size: 14px;
     border: 1px solid #ccc;

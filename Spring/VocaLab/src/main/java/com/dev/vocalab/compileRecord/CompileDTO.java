@@ -19,6 +19,7 @@ public class CompileDTO {
     private String userId;
     private String source; //text box에 직접 입력한 url이나 text 데이터
     private LocalDateTime createdAt;
+    private int daysAgo; // 오늘 날짜 기준 몇일 전 기록
 
     private List<FilesEntity> fileRecordList;
 

@@ -1,28 +1,46 @@
 package com.dev.vocalab.files;
 
+import com.dev.vocalab.users.UsersEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Table(name="Files")
 @Entity
+@Table(name = "Files")
 @Data
-@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FilesEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int fileId;
+    @Column(name = "fileId")
+    private Integer fileId;
 
-    private String userId;
-    private int tableId;
-    private String category;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private Category category;
 
-    private String fileType;
+    @Column(name = "filePath", nullable = false, length = 255)
     private String filePath;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fileType", nullable = false)
+    private FileType fileType;
+
+    @Column(name = "uploadedAt", nullable = false)
     private LocalDateTime uploadedAt;
+
+    @Column(name = "tableId")
+    private Integer tableId;
+
+    @Column(name = "userId", nullable = false, length = 100)
+    private String userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false)
+    private UsersEntity user;
 
     public enum Category {
         BOARD, COMPILE, ESSAY, NONE, PROFILE, TEST, TESTRECORD, WORD, COMPILERESULT
@@ -32,10 +50,10 @@ public class FilesEntity {
         FILE, IMAGE
     }
 
-    // insert 시 업로드 날짜 자동 입력
     @PrePersist
     protected void onPrePersist() {
         //작성일 : 현재시각으로 설정
         this.uploadedAt = LocalDateTime.now();
     }
+
 }

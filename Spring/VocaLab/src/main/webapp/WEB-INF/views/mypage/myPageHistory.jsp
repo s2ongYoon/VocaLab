@@ -10,18 +10,74 @@
         <link rel="stylesheet" type="text/css" href="/css/top.css">
         <link rel="stylesheet" type="text/css" href="/css/bottom.css">
         <link rel="stylesheet" type="text/css" href="/css/global.css">
+        <link rel="stylesheet" type="text/css" href="/css/myPage/myPage.css">
+        <!-- jQuery CDN -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- JavaScript 파일 경로 -->
+        <script src="/js/myPage/myPage.js"></script>
         <script src="/js/top.js"></script> <!-- 배너 -->
         <script src="/js/bottom.js"></script> <!-- 배너 -->
+
     </head>
     <body>
-        <div class="word-history-page">
-            <h2>단어 생성 기록</h2>
-            <div class="select-all">
-                <label><input type="checkbox" id="select-all"> 전체선택/선택해제</label>
+        <div class="mypage-container">
+            <div id="banner_top" role="banner">
+                <%@ include file="../banners/top_left.jsp" %>
             </div>
-            <div id="record-list">
-                <!-- 무한 스크롤로 기록 일자 목록이 여기에 출력될 거야 -->
+            <div class="mypage-main-container">
+                <div class="sidebar">
+                    <ul>
+                        <li id="word-history" class="menu-item active">
+                            <a href="/myPage/compileHistory">단어 생성 기록</a>
+                        </li>
+                        <li id="member-info" class="menu-item">
+                            <a href="/myPage/userInformation">회원정보</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="word-history-page">
+                    <h1>단어 생성 기록</h1>
+<%--                        <div class="select-all">--%>
+<%--                            <div>--%>
+<%--                                <a id="select-all-a">전체선택</a> &nbsp;--%>
+<%--                            </div>--%>
+<%--                            <div>--%>
+<%--                                <a id="deselect-a">선택해제</a> &nbsp;--%>
+<%--                            </div>--%>
+<%--                            <div>--%>
+<%--                                <input type="button" id="deleteSelect" value="선택삭제">--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+                        <div id="record-list">
+                            <ul>
+                                <c:forEach var="record" items="${recordList}">
+                                    <li id="li-${record.compileId}">
+                                      <div>
+                                          <form name="form-${record.compileId}" action="/compile/result" method="post" enctype="multipart/form-data">
+                                              &nbsp;
+<%--                                              <input type="checkbox" class="compile-record">&nbsp;--%>
+                                              ${record.createdAt}&nbsp;
+                                              <input type="hidden" value="${record.compileId}" name="compileId" class="compileId">
+                                              <input type="file" name="files" multiple hidden>
+                                              <c:choose>
+                                                  <c:when test="${record.daysAgo < 1}" >
+                                                      (오늘)
+                                                  </c:when>
+                                                  <c:otherwise>
+                                                      (${record.daysAgo}일 전)
+                                                  </c:otherwise>
+                                              </c:choose>
+                                          </form>
+                                      </div>
+                                    </li>
+                                </c:forEach>
+
+                            </ul>
+                        </div>
+                </div>
+            </div>
+            <div class="banner_bottom">
+                <%@ include file="../banners/bottom.jsp" %>
             </div>
         </div>
     </body>

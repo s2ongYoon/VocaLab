@@ -9,10 +9,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +34,7 @@ public class FileHandler {
         String uuid = UUID.randomUUID().toString().substring(0, 8);
         uuid = uuid.replaceAll("-", "");
         // 새로운 파일명
-        String newFileName = saveDir + File.separator + uuid + "_" + fileName;
+        String newFileName =  saveDir + File.separator + uuid + "_" + fileName;
         // 기존파일, 새로운 파일의 객체생성 후 이름 변경
 //        File file = new File(saveDir + File.separator + fileName);
 //        File newFile = new File(saveDir + File.separator + newFileName);
@@ -44,56 +46,53 @@ public class FileHandler {
     // [ 파일 디렉토리 지정 메서드]
     public static FilesDTO  spesifyFilePath(FilesDTO filesDto) {
         System.out.println("FileHandler - spesifyFilePath");
-        try {
-            // 1. 물리적 경로 얻기
-            String uploadDir = ResourceUtils.getFile("classpath:static/uploads/compileRecord/").toPath().toString();
-            // 2. 파일을 저장할 경로(실제 서버파일 시스템의 절대경로로 변환)
-            // 2-1. 업로드 일자, 사용자Id, compileId(compileRecord테이블) 변수에 저장
-            DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            String userId = filesDto.getUserId();
-            String compileId = filesDto.getCompileId();
-            // 2-3. 저장디렉토리 경로 변수 정장 (yyyy/mm/dd/userId/compileId)
-            String subDir = LocalDate.now().format(date)+ File.separator + userId + File.separator + compileId;
+        // 1. 물리적 경로 얻기
+        String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/compileRecord/";
+        // 2. 파일을 저장할 경로(실제 서버파일 시스템의 절대경로로 변환)
+        // 2-1. 업로드 일자, 사용자Id, compileId(compileRecord테이블) 변수에 저장
+        System.out.println("FileHandler - uploadDir: " + uploadDir);
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String userId = filesDto.getUserId();
+        String compileId = filesDto.getCompileId();
+        // 2-3. 저장디렉토리 경로 변수 정장 (yyyy/mm/dd/userId/compileId)
+        String subDir = LocalDate.now().format(date)+ File.separator + userId + File.separator + compileId;
 
-            // 3. 파일명, 확장자 추출
-            // 3-1. filesDto에서 originalFileName이 비어있으면 multipartFile에서 파일이름 추출.
-            String originalFileName;
-            System.out.println("spesifyFilePath - originalFileName-:");
-            if(filesDto.getOriginalFileName().contains("csv")) {// 값이 있으면 compileResult(추출 결과)의 csv파일의 이름이다. (compileResult_compileId.csv)
-                originalFileName = filesDto.getOriginalFileName();
-                System.out.println("compileResult csv - originfilename-" + originalFileName + "-");
-            } else {
-                originalFileName = filesDto.getFile().getOriginalFilename();
-                System.out.println("mutipartFile - originfilename-" + originalFileName+ "-");
-            }
-            // 3-3. 파일의 확장자 추출
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-            // 3-4. 파일 확장자에 따라 파일명이 달라짐
-            System.out.println("FileExtension : " + fileExtension);
-            if (fileExtension.trim().equals("jpg") || fileExtension.trim().equals("jpeg") || fileExtension.trim().equals("png")) {
-                //이미지 파일의 저장 경로(yyyy/mm/dd/userId/compileId/img)
-                subDir += File.separator + "img";
-                filesDto.setFileType("IMAGE");
-                System.out.println(filesDto.getFileType());
-            } else {
-                //기타문서 파일의 저장 경로(yyyy/mm/dd/userId/compileId/doc)
-                subDir += File.separator + "doc";
-                filesDto.setFileType("FILE");
-                System.out.println(filesDto.getFileType());
-            }// if
-            String saveDir = uploadDir + File.separator + subDir;
-            System.out.println("save dir : " + saveDir);
-
-            // 최종 파일 경로
-            System.out.println("final_saveDir" + saveDir);
-            filesDto.setSubDir(subDir);
-            filesDto.setSaveDir(saveDir);
-            filesDto.setOriginalFileName(originalFileName);
-            filesDto.setFileExtension(fileExtension);
-            return filesDto;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        // 3. 파일명, 확장자 추출
+        // 3-1. filesDto에서 originalFileName이 비어있으면 multipartFile에서 파일이름 추출.
+        String originalFileName;
+        System.out.println("spesifyFilePath - originalFileName-:");
+        if(filesDto.getOriginalFileName().contains("csv")) {// 값이 있으면 compileResult(추출 결과)의 csv파일의 이름이다. (compileResult_compileId.csv)
+            originalFileName = filesDto.getOriginalFileName();
+            System.out.println("compileResult csv - originfilename-" + originalFileName + "-");
+        } else {
+            originalFileName = filesDto.getFile().getOriginalFilename();
+            System.out.println("mutipartFile - originfilename-" + originalFileName+ "-");
         }
+        // 3-3. 파일의 확장자 추출
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+        // 3-4. 파일 확장자에 따라 파일명이 달라짐
+        System.out.println("FileExtension : " + fileExtension);
+        if (fileExtension.trim().equals("jpg") || fileExtension.trim().equals("jpeg") || fileExtension.trim().equals("png")) {
+            //이미지 파일의 저장 경로(yyyy/mm/dd/userId/compileId/img)
+            subDir += File.separator + "img";
+            filesDto.setFileType("IMAGE");
+            System.out.println(filesDto.getFileType());
+        } else {
+            //기타문서 파일의 저장 경로(yyyy/mm/dd/userId/compileId/doc)
+            subDir += File.separator + "doc";
+            filesDto.setFileType("FILE");
+            System.out.println(filesDto.getFileType());
+        }// if
+        String saveDir = uploadDir + subDir;
+        System.out.println("save dir : " + saveDir);
+
+        // 최종 파일 경로
+        System.out.println("final_saveDir" + saveDir);
+        filesDto.setSubDir(subDir);
+        filesDto.setSaveDir(saveDir);
+        filesDto.setOriginalFileName(originalFileName);
+        filesDto.setFileExtension(fileExtension);
+        return filesDto;
     }
 
     // [ 파일 디렉토리 생성 메서드 ]
@@ -224,16 +223,32 @@ public class FileHandler {
 
                 // 단어와 뜻 가져오기
                 String word = (String) wordItem.get("단어");
-                String meaning = (String) wordItem.get("뜻");
+                String meaning = (String)wordItem.get("뜻");
 
                 // Map에 데이터 추가
                 Map<String, Object> map = new HashMap<>();
-                map.put("word", word);
+                map.put("word",  word);
                 map.put("meaning", meaning);
                 wordList.add(map);
 
+                String[] means = meaning.split("\\.");
+                String mean = "";
+                System.out.println("품사제거 wjs : " + meaning);
+                System.out.println("품사제거 : " + Arrays.toString(means));
+
+                if (means.length > 1) {
+                    // "static/" 이후의 문자열을 가져오기
+                    mean = means[1].trim();
+                    System.out.println("뜻에서 품사 삭제" + mean);
+                } else {
+                    System.out.println("품사가 포함되지 않았읍니다.");
+                }
+
+                word = "\"" + word + "\"";
+                mean = "\"" + mean + "\"";
+
                 // 데이터를 탭으로 구분하여 파일에 작성
-                writer.write(word + "," + meaning + "\n");
+                writer.write( word + "," + mean + "\n");
             }
             System.out.println("CSV 파일 저장 완료: " + saveCsv);
             return wordList;

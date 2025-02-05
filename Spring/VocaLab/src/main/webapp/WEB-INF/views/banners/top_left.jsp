@@ -24,7 +24,7 @@
                         <a class="menu" href="/">Contents</a>
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">>AI Essay</a>
+                        <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
                     </div>
                 </div>
