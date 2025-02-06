@@ -9,12 +9,12 @@
         <c:choose>
             <%--        로그아웃       --%>
             <c:when test="${empty userSession.userId}">
-<%--                <span class="nav-item">--%>
+                <span class="nav-item">
                     <a class="menu" href="/login">Login</a>
-<%--                </span>--%>
-<%--                <span class="nav-item">--%>
+                </span>
+                <span class="nav-item">
                     <a class="menu" href="/register">SignUp</a>
-<%--                </span>--%>
+                </span>
             </c:when>
             <%--        관리자 로그인      --%>
             <c:when test="${userSession.userRole eq 'ADMIN'}">
@@ -23,7 +23,7 @@
                 </span>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown">Contents</span>
+                    <span class="nav-item dropdown hover">Contents</span>
                     <div class="dropdown-menu">
                         <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
@@ -31,7 +31,7 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown"><b>${userSession.userNickname}</b>&nbsp;님</span>
+                    <span class="nav-item dropdown hover"><b>${userSession.userNickname}</b>&nbsp;님</span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/CS/Inquiry">Admin</a>
@@ -45,7 +45,7 @@
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
                 <div  class="dropdown">
-                    <span class="nav-item dropdown" id="contents">Contents</span>
+                    <span class="nav-item dropdown hover" id="contents">Contents</span>
                     <div class="dropdown-menu">
                         <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
@@ -53,7 +53,7 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown" id="username"><b>${userSession.userNickname}</b>&nbsp;님</span>
+                    <span class="nav-item dropdown hover" id="username"><b>${userSession.userNickname}</b>&nbsp;님</span>
                     <div class="dropdown-menu">
                         <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/logout">Logout</a>
