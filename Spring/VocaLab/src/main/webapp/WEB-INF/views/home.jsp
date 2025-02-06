@@ -45,7 +45,7 @@
                 <form class="input-group" name="compileForm" action="compile/result" method="post" enctype="multipart/form-data">
                     <!-- 파일 업로드 아이콘 -->
                     <label for="file-upload" class="file-icon">
-                        <img src="/images/file.png" alt="파일 업로드" width="25" height="25">
+                        <img src="${pageContext.request.contextPath}/images/file.png" alt="파일 업로드" width="25" height="25">
                     </label>
                     <input id="file-upload" name="files" style="display: none;" type="file" multiple/>
                     <!-- URL 또는 텍스트 입력 -->

@@ -25,7 +25,7 @@
             });
         });
     </script>
-    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
+    <link href="/css/board.css" rel="stylesheet">
 </head>
 <body>
 <%-- top배너 삽입 --%>

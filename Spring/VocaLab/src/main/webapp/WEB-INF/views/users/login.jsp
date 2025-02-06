@@ -11,7 +11,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
 </head>
 <body>
 <div class="login-wrap">
@@ -45,7 +45,7 @@
                 <span class="util-divider">|</span>
                 <a href="/find-password" class="util-link">비밀번호 찾기</a>
                 <span class="util-divider">|</span>
-                <a href="${pageContext.request.contextPath}/register" class="util-link">회원가입</a>
+                <a href="/register" class="util-link">회원가입</a>
             </div>
         </div>
 
@@ -53,11 +53,11 @@
             <p class="social-title">소셜 계정으로 로그인</p>
             <div class="social-buttons">
                 <a href="/oauth2/authorization/google" class="social-button google">
-                    <img src="${pageContext.request.contextPath}/images/g-logo.png" alt="Google">
+                    <img src="/images/g-logo.png" alt="Google">
                     <span>구글 로그인</span>
                 </a>
                 <a href="/oauth2/authorization/naver" class="social-button naver">
-                    <img src="${pageContext.request.contextPath}/images/naver-logo.png" alt="Naver">
+                    <img src="/images/naver-logo.png" alt="Naver">
                     <span>네이버 로그인</span>
                 </a>
             </div>

@@ -3,6 +3,7 @@ package com.dev.vocalab.board;
 import com.dev.vocalab.files.FilesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,14 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final FilesService filesService;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;  // `/home/files` 경로 설정
+
+    // [📌] 변경된 이미지 저장 경로
+    private String getBoardImagePath(Integer boardId) {
+        return uploadDir + "/images/upload/board/" + boardId;
+    }
 
     @Autowired
     public BoardService(BoardRepository boardRepository, FilesService filesService) {
@@ -93,6 +102,7 @@ public class BoardService {
     public void deleteBoard(Integer boardId) {
         boardRepository.findById(boardId).ifPresent(board -> {
             filesService.deleteAllBoardFiles(boardId);
+            filesService.deleteFolder(getBoardImagePath(boardId));
             boardRepository.delete(board);
         });
     }

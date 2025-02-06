@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,14 @@ import java.util.UUID;
 @Transactional
 public class FilesService {
     private final FilesRepository filesRepository;
-    private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
+//    private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
+    @Value("${file.upload-dir}")
+    private String uploadDir;  // `/home/files` 경로 설정
+
+    // [📌] 변경된 이미지 저장 경로
+    private String getBoardImagePath(Integer boardId) {
+        return uploadDir + "/images/upload/board/" + boardId;
+    }
 
     @Autowired
     public FilesService(FilesRepository filesRepository) {
@@ -200,8 +208,8 @@ public class FilesService {
     }
     @Transactional
     public void handleBoardFileUpload(Integer boardId, MultipartFile thumbnail, String userId) {
-        String tempPath = realPath + "/board/temp/";
-        String uploadPath = realPath + "/board/" + boardId + "/";
+        String tempPath = uploadDir + "/images/upload/board/temp/";
+        String uploadPath = getBoardImagePath(boardId);
 
         copyFiles(tempPath, uploadPath);
         deleteFolder(tempPath);
@@ -212,8 +220,8 @@ public class FilesService {
     // 게시글 파일 업데이트 처리
     @Transactional
     public void handleBoardFileUpdate(Integer boardId, String content, MultipartFile thumbnail, String userId) {
-        String tempPath = realPath + "/board/temp/";
-        String boardPath = realPath + "/board/" + boardId + "/";
+        String tempPath = uploadDir + "/images/upload/board/temp/";
+        String boardPath = getBoardImagePath(boardId);
 
         try {
             // 1. 기존 파일 엔티티들 삭제

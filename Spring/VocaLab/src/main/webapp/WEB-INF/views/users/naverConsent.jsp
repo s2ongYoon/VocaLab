@@ -100,7 +100,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="${pageContext.request.contextPath}/images/naver-logo-white.png" alt="네이버">
+        <img src="/images/naver-logo-white.png" alt="네이버">
         <h1>네이버 로그인</h1>
     </div>
 

@@ -11,6 +11,7 @@ import com.dev.vocalab.users.details.CustomUsersDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,9 +38,17 @@ public class BoardController {
     private final BoardService boardService;
     private final FilesService filesService;
     private final UsersRepository usersRepository;
-    private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
+//    private final String realPath = "C:/Dev/Data/VocaLab/Spring/VocaLab/src/main/resources/static/images/upload";
     private final BoardRepository boardRepository;
     private final FilesRepository filesRepository;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;  // `/home/files` 설정
+
+    // [📌] 변경된 이미지 저장 경로
+    private String getBoardImagePath(Integer boardId) {
+        return uploadDir + "/images/upload/board/" + boardId;
+    }
 
     /*
     페이지로 이동되는 메서드들
@@ -88,8 +97,8 @@ public class BoardController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
-        AuthenticationUtil.addUserSessionToModel(model);
-        filesService.deleteFolder(realPath + "/board/temp/");
+        AuthenticationUtil.addUserSessionToModel(model);// ✅ temp 폴더 삭제 경로 변경
+        filesService.deleteFolder(uploadDir + "/images/upload/board/temp/");
         return "board/boardWrite";
     }
 @GetMapping("/View")
@@ -141,9 +150,11 @@ public String view(Model model, @RequestParam Integer boardId) {
         if (!currentUserId.equals(board.getUser().getUserId())) {
             return "redirect:/CS/Notice";
         }
-        String tempPath = realPath + "/board/temp/";
+        // 기존 realPath 대신 `/home/files/images/upload/board/{boardId}` 사용
+        String tempPath = uploadDir + "/images/upload/board/temp/";;
         filesService.deleteFolder(tempPath);
-        String originPath = realPath + "/board/" + board.getBoardId() + "/";
+        String originPath = getBoardImagePath(boardId);
+//        String originPath = realPath + "/board/" + board.getBoardId() + "/";
         filesService.copyFiles(originPath, tempPath);
         board.setContent(board.getContent().replaceAll("/" + board.getBoardId() + "/", "/temp/"));
         model.addAttribute("row", board);
@@ -272,12 +283,12 @@ public String view(Model model, @RequestParam Integer boardId) {
         if (replyBoard.isPresent()) {
             Integer replyBoardId = replyBoard.get().getBoardId();
             filesService.deleteAllBoardFiles(replyBoardId);
-            filesService.deleteFolder(realPath + "/board/" + replyBoardId);
+            filesService.deleteFolder(getBoardImagePath(replyBoardId));
             boardRepository.delete(replyBoard.get());
         }
         // 원본 게시글 삭제
         boardService.deleteBoard(boardId);
-        filesService.deleteFolder(realPath + "/board/" + boardId);
+        filesService.deleteFolder(getBoardImagePath(boardId));
         // 카테고리 값 변환
         String redirectCategory = category.equals("FAQ") ?
                 category :
@@ -358,7 +369,8 @@ public String view(Model model, @RequestParam Integer boardId) {
             throw new AuthenticationException("인증이 필요합니다.") {};
         }
         log.info("이미지 업로드 요청: {}", multipartFile.getOriginalFilename());
-        String tempPath = realPath + "/board/temp/";
+        // 기존 realPath 대신 uploadDir 사용
+        String tempPath = uploadDir + "/images/upload/board/temp/";
         return filesService.uploadFile(multipartFile, tempPath).toString();
     }
 }

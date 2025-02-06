@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <link rel="stylesheet" type="text/css" href="/css/top.css">
 <link rel="stylesheet" type="text/css" href="/css/bottom.css">
+<link rel="stylesheet" type="text/css" href="/css/global.css">
 <div class="banner-center">
     <div class="nav-logout-links">
         <c:choose>

@@ -13,7 +13,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
+    <link href="/css/board.css" rel="stylesheet">
     <script>
         function confirmDelete() {
             if (confirm("정말 삭제하시겠습니까?")) {

@@ -130,13 +130,22 @@ public class SecurityConfig {
 // true를 추가하여 항상 이 URL로 리다이렉트);
 
         http.authorizeHttpRequests((authorize) ->
-                authorize.requestMatchers("/**").permitAll()
+                authorize
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/fonts/**",
+                                "/static/**"
+                        ).permitAll()
+                        .requestMatchers("/**").permitAll()
         );
 
         http.logout(logout -> logout
                 .logoutSuccessHandler(new CustomLogoutSuccessHandler()) // 커스텀 로그아웃 핸들러 사용
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .deleteCookies("JSESSIONID")
         );
 

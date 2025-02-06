@@ -90,7 +90,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="${pageContext.request.contextPath}/images/google-logo.png" alt="Google" class="google-logo">
+        <img src="/images/google-logo.png" alt="Google" class="google-logo">
         <h1 class="title">VocaLab에 로그인</h1>
         <p class="subtitle">${userInfo.email}</p>
     </div>

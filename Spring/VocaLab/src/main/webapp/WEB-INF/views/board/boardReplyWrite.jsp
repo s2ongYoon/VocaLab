@@ -17,7 +17,7 @@
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
-    <link href="${pageContext.request.contextPath}/css/board.css" rel="stylesheet">
+    <link href="/css/board.css" rel="stylesheet">
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({
