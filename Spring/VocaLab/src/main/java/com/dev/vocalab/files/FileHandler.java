@@ -44,9 +44,8 @@ public class FileHandler {
     // [ 파일 디렉토리 지정 메서드]
     public static FilesDTO  spesifyFilePath(FilesDTO filesDto) {
         System.out.println("FileHandler - spesifyFilePath");
-        try {
             // 1. 물리적 경로 얻기
-            String uploadDir = ResourceUtils.getFile("classpath:static/uploads/compileRecord/").toPath().toString();
+            String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/compileRecord/";
             // 2. 파일을 저장할 경로(실제 서버파일 시스템의 절대경로로 변환)
             // 2-1. 업로드 일자, 사용자Id, compileId(compileRecord테이블) 변수에 저장
             DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -81,7 +80,7 @@ public class FileHandler {
                 filesDto.setFileType("FILE");
                 System.out.println(filesDto.getFileType());
             }// if
-            String saveDir = uploadDir + File.separator + subDir;
+            String saveDir = uploadDir + subDir;
             System.out.println("save dir : " + saveDir);
 
             // 최종 파일 경로
@@ -91,9 +90,6 @@ public class FileHandler {
             filesDto.setOriginalFileName(originalFileName);
             filesDto.setFileExtension(fileExtension);
             return filesDto;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // [ 파일 디렉토리 생성 메서드 ]
@@ -232,8 +228,25 @@ public class FileHandler {
                 map.put("meaning", meaning);
                 wordList.add(map);
 
+                String[] means = meaning.split("\\.");
+                String mean = "";
+                System.out.println("품사제거 wjs : " + meaning);
+                System.out.println("품사제거 : " + Arrays.toString(means));
+
+                if (means.length > 1) {
+                    // "static/" 이후의 문자열을 가져오기
+                    mean = means[1].trim();
+                    System.out.println("뜻에서 품사 삭제" + mean);
+                } else {
+                    System.out.println("품사가 포함되지 않았읍니다.");
+                }
+
+                word = "\"" + word + "\"";
+                mean = "\"" + mean + "\"";
+
+
                 // 데이터를 탭으로 구분하여 파일에 작성
-                writer.write(word + "," + meaning + "\n");
+                writer.write(word + "," + mean + "\n");
             }
             System.out.println("CSV 파일 저장 완료: " + saveCsv);
             return wordList;

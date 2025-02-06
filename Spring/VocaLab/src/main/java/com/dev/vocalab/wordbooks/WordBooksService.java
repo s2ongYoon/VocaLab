@@ -10,14 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,10 +33,8 @@ public class WordBooksService {
 
     public List<String[]> readWordBook(Integer wordBookId) throws Exception {
 
-        Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD)
-                .stream()
-                .findFirst();
-        System.out.println("fileEntityOpt: " +fileEntityOpt);
+        Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD).stream().findFirst();
+        System.out.println("fileEntityOpt: " + fileEntityOpt);
 
         if (fileEntityOpt.isEmpty()) {
             throw new Exception("No file found for the given wordBookId.");
@@ -67,10 +66,9 @@ public class WordBooksService {
         }
         return wordList;
     }
+
     public void deleteWord(Integer wordBookId, List<String> deleteWordList) throws Exception {
-        Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD)
-                .stream()
-                .findFirst();
+        Optional<FilesEntity> fileEntityOpt = filesRepository.findByTableIdAndCategory(wordBookId, FilesEntity.Category.WORD).stream().findFirst();
         System.out.println("fileEntityOpt: " + fileEntityOpt);
 
         if (fileEntityOpt.isEmpty()) {
@@ -112,19 +110,16 @@ public class WordBooksService {
             throw new Exception("Failed to write to the CSV file: " + absoluteFilePath, e);
         }
     }
-    public void changeStatusOfBookmark(Integer wordBookId){
+
+    public void changeStatusOfBookmark(Integer wordBookId) {
         WordBooksEntity wordBooks = wordBooksRepository.findByWordBookId(wordBookId);
         System.out.println("Before set: " + wordBooks.getBookmark());
-        if (wordBooks.getBookmark()==false){
-            wordBooks.setBookmark(true);
-        }else {
-            wordBooks.setBookmark(false);
-        }
+        wordBooks.setBookmark(!wordBooks.getBookmark());
         System.out.println("After set: " + wordBooks.getBookmark());
         wordBooksRepository.saveAndFlush(wordBooks);
     }
 
-    public WordBooksEntity loadWordBookStatus(Integer wordBookId){
+    public WordBooksEntity loadWordBookStatus(Integer wordBookId) {
         return wordBooksRepository.findByWordBookId(wordBookId);
     }
 
@@ -144,6 +139,7 @@ public class WordBooksService {
         wordBook.setWordBookTitle(newTitle.trim());
         wordBooksRepository.saveAndFlush(wordBook);
     }
+
     // [ 사용자 단어장 목록 조회 ]
     public List<WordBooksEntity> getWordBooks(String userId) {
         System.out.println("getWordBooks");
@@ -155,7 +151,7 @@ public class WordBooksService {
     public String deleteWordbooks(Integer wordBookId, String userId) {
         System.out.println("deleteWordbooks");
 
-        if(wordBooksRepository.existsById(wordBookId)) {
+        if (wordBooksRepository.existsById(wordBookId)) {
             wordBooksRepository.deleteByWordBookId(wordBookId);
             List<FilesEntity> filesEntityList = filesRepository.findByTableIdAndCategoryAndUserId(wordBookId, FilesEntity.Category.WORD, userId);
             System.out.println("filesEntityList: " + filesEntityList);
@@ -174,7 +170,7 @@ public class WordBooksService {
         System.out.println("wordBookService - addWords");
 
         // id로 이름 찾기
-        WordBooksEntity wordBook =  wordBooksRepository.findByWordBookId(wordBookId);
+        WordBooksEntity wordBook = wordBooksRepository.findByWordBookId(wordBookId);
         String wordBookTitle = wordBook.getWordBookTitle();
         System.out.println(userId + ", " + wordBookId);
         FilesEntity csvfiles = filesRepository.findByUserIdAndTableIdAndCategory(userId, wordBookId, FilesEntity.Category.WORD);
@@ -183,13 +179,11 @@ public class WordBooksService {
 
         String saveDir = null;
         String originalFileName = null;
-        try {
-            String uploadDir = ResourceUtils.getFile("classpath:static/uploads/wordBooks/").toPath().toString();
-            saveDir = uploadDir + File.separator + userId;
-            originalFileName = wordBookTitle + ".csv";
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+
+        String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/wordBooks/";
+        saveDir = uploadDir + File.separator + userId;
+        originalFileName = wordBookTitle + ".csv";
+
         String filePath = saveDir + File.separator + originalFileName;
 
         // csv 파일이 있으면 덮어쓰기 없으면 새로 저장
@@ -206,12 +200,25 @@ public class WordBooksService {
             // FileWriter를 사용해 CSV 파일 생성
             try (FileWriter writer = new FileWriter(saveDir + File.separator + originalFileName)) {
                 for (int i = 0; i < words.size(); i++) {
-                    writer.append(words.get(i)) // 단어 추가
+                    String word = "\""+ words.get(i) + "\"";
+                    String mean = meanings.get(i);
+                    String[] means = mean.split("\\.");
+                    if (means.length > 1) {
+                        // "static/" 이후의 문자열을 가져오기
+                        mean = "\""+ means[1].trim() + "\"";
+                        System.out.println("뜻에서 품사 삭제" + mean);
+                    } else {
+                        System.out.println("품사가 포함되지 않았읍니다.");
+                    }
+                    System.out.println("새로운단어장에 추가하는 경우");
+                    System.out.println("word" + word);
+                    System.out.println("mean" + mean);
+
+                    writer.append(word) // 단어 추가
                             .append(",")         // 쉼표로 구분
-                            .append(meanings.get(i)) // 뜻 추가
+                            .append(mean) // 뜻 추가
                             .append("\n");       // 행 종료
                 }
-
                 System.out.println("CSV 파일이 생성되었습니다");
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -262,7 +269,7 @@ public class WordBooksService {
                     }
                 } catch (CsvValidationException e) {
                     throw new RuntimeException("CSV 파일 읽기 중 오류 발생: " + e.getMessage(), e);
-                }  catch (IOException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
 
@@ -270,12 +277,25 @@ public class WordBooksService {
 
             // 중복 데이터 방지
             for (int i = 0; i < words.size(); i++) {
-                String newWord = words.get(i);
-                String newMeaning = meanings.get(i);
+                String word = words.get(i);
+                String mean = meanings.get(i);
+                System.out.println("word" + word);
+                System.out.println("따옴표 추가전 : " + mean);
+                String[] means = mean.split("\\.");
+                String newMean;
+                if (means.length > 1) {
+                    // "static/" 이후의 문자열을 가져오기
+                    newMean = means[1].trim();
+                    System.out.println("뜻에서 품사 삭제" + newMean);
+                } else {
+                    newMean = "";
+                    System.out.println("품사가 포함되지 않았읍니다.");
+                }
+
                 boolean isDuplicate = wordList.stream()
-                        .anyMatch(row -> row[0].equals(newWord) && row[1].equals(newMeaning));
+                        .anyMatch(row -> row[0].equals(word) && row[1].equals(newMean));
                 if (!isDuplicate) {
-                    wordList.add(new String[]{newWord, newMeaning});
+                    wordList.add(new String[]{word, newMean});
                 }
             } //for
 
@@ -295,8 +315,6 @@ public class WordBooksService {
             }
 
         } // if
-
-
 
 
     } // addWords
