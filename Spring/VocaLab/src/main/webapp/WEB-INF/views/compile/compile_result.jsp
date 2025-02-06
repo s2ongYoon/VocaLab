@@ -20,7 +20,7 @@
     <form class="page-container" name="addWordBook" action="addWordBookData" method="post">
         <%-- top배너 삽입 --%>
         <div id="banner_top" role="banner">
-            <%@ include file="../banners/top_left.jsp" %>
+            <%@ include file="../banners/top_left1.jsp" %>
         </div>
         <%-- 왼쪽 섹션 --%>
         <div id="section">
@@ -91,7 +91,7 @@
     </form>
 
     <div class="banner_bottom">
-        <%@ include file="../banners/bottom.jsp" %>
+        <%@ include file="../banners/bottom1.jsp" %>
     </div>
 
     <%-- 단어장 목록 모달 --%>

@@ -9,6 +9,7 @@ import com.dev.vocalab.wordbooks.WordBooksService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -137,12 +138,15 @@ public class CompileController {
     // [ 사용자 단어장 삭제 - wordBookService ] -완성
     @RequestMapping("/removeWordbook")
     @ResponseBody
-    public String removeWordbookAjax(@RequestBody Map<String, List<String>> map) {
+    public String removeWordbookAjax(@RequestBody Map<String, List<String>> map, Model model) {
         System.out.println("removeWordbookAjax");
         System.out.println("map" + map.toString());
 
-//        String userId = (String) session.getAttribute("sessionId");
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
         String userId = AuthenticationUtil.getCurrentUserId();
+        AuthenticationUtil.addUserSessionToModel(model);
         String result = "";
 
         List<String> wordBookIds = map.get("ids");

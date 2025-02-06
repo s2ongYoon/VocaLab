@@ -67,5 +67,41 @@ $(document).ready(function() {
     }
 
 
-    //
+    //UserInfo.jsp
+    $("#modifyBtn").on("click", function (event) {
+        console.log("click");
+        event.preventDefault(); // 기본 폼 제출 방지
+        let password = $("#password").val().trim();
+        // 비밀번호 입력 확인
+        if (password === "") {
+            alert("비밀번호를 입력해 주세요.");
+            $("#password").focus();
+            event.preventDefault(); // 폼 제출 방지
+
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "checkPassword",
+                data: { userPassword: password },
+                success: function (response) {
+                    if (response === "success") {
+                        window.location.href = "/myPage/userModify"; // 성공 시 페이지 이동
+                    } else {
+                        if ($("#errorMessage").length === 0) {
+                            $("#password").after('<div id="errorMessage" style="color: darkred; font-size: 9px;">비밀번호가 일치하지 않습니다.</div>');
+                        } else {
+                            $("#errorMessage").text("비밀번호가 일치하지 않습니다.");
+                        }
+                        $("#password").css("border", "1px solid darkred");
+                        $("#errorMessage").css("height", "10px")
+                        $("#passLabel").css("height", "35px")
+                    }
+                },
+                error: function () {
+                    console.log("서버에 오류발생")
+                }
+            });
+        }
+
+    });
 });

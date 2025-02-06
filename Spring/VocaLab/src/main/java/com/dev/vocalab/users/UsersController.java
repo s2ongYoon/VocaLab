@@ -72,10 +72,10 @@ public class UsersController {
 
             model.addAttribute("principal", principal);
 
-            return "redirect:/CS/Main";
+            return "redirect:/";
         }
 
-        return "redirect:/CS/Main";
+        return "redirect:/";
     }
 
 

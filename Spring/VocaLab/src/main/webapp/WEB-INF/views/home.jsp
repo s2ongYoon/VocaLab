@@ -23,7 +23,7 @@
         <div class="page-container">
             <!-- top배너 삽입 -->
             <div id="banner_top" role="banner">
-                <%@ include file="banners/top_center.jsp" %>
+                <%@ include file="banners/top_center1.jsp" %>
             </div>
             <!-- 본문 내용 -->
             <div class="container">
@@ -63,7 +63,7 @@
                 </div>
             </div>
             <div class="banner_bottom">
-                <%@ include file="./banners/bottom.jsp" %>
+                <%@ include file="banners/bottom1.jsp" %>
             </div>
         </div>
     </body>

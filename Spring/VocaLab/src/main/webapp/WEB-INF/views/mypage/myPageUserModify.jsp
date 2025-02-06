@@ -7,10 +7,10 @@
         <meta charset="UTF-8">
         <title>VocaLab-mypage</title>
         <!-- CSS 파일 경로 -->
-        <link rel="stylesheet" type="text/css" href="/css/top.css">
-        <link rel="stylesheet" type="text/css" href="/css/bottom.css">
         <link rel="stylesheet" type="text/css" href="/css/global.css">
         <link rel="stylesheet" type="text/css" href="/css/myPage/myPage.css">
+        <!-- jQuery CDN -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- JavaScript 파일 경로 -->
         <script src="/js/top.js"></script> <!-- 배너 -->
         <script src="/js/bottom.js"></script> <!-- 배너 -->
@@ -19,7 +19,7 @@
     <body>
     <div class="mypage-container">
         <div id="banner_top" role="banner">
-            <%@ include file="../banners/top_left.jsp" %>
+            <%@ include file="../banners/top_left1.jsp" %>
         </div>
         <div class="mypage-main-container">
             <div class="sidebar">
@@ -34,24 +34,25 @@
             </div>
             <div class="member-edit-page">
                 <h1>회원 정보 수정</h1>
-                <form>
+                <div class="mypage-line"></div>
+                <form name="modifyForm" action="userModifyPro" method="post">
                     <div class="edit-list">
                         <div class="edit-menu">
-                            <label for="username">아이디:</label>
+                            <label for="userId">아이디:</label>
                             <label for="password">비밀번호:</label>
-                            <label for="confirm-password">비밀번호 확인:</label>
-                            <label for="name">이름:</label>
+<%--                            <label for="confirm-password">비밀번호 확인:</label>--%>
+                            <label for="username">이름:</label>
                             <label for="nickname">닉네임:</label>
                             <label for="email">이메일:</label>
                             <label for="dob">생년월일:</label>
                             <label for="gender">성별:</label>
                         </div>
                         <div class="edit-data">
-                            <input type="text" id="username" value="${user.userId}" disabled>
-                            <input type="password" name="password" id="password">
-                            <input type="password" name="confirm-password"  id="confirm-password">
-                            <input type="text" id="name" value="${user.userName}" disabled>
-                            <input type="text" id="nickname" value="${user.userNickname}">
+                            <input type="text" id="userId" value="${user.userId}" disabled>
+                            <input type="password" name="password" id="password" disabled>
+<%--                            <input type="password" name="confirm-password"  id="confirm-password">--%>
+                            <input type="text" id="username" value="${user.userName}" disabled>
+                            <input type="text" name="userNickname" id="nickname" value="${user.userNickname}">
                             <input type="email" id="email" value="${user.userEmail}" disabled>
                             <input type="date" id="dob" value="${birth}" disabled>
                             <c:choose>
@@ -65,14 +66,14 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" onclick="goToEditPage()">회원정보 수정</button>
+                        <button type="submit">회원정보 수정</button>
                     </div>
                 </form>
-                <a onclick="" class="withdraw">회원탈퇴</a>
+<%--                <a onclick="" class="withdraw">회원탈퇴</a>--%>
             </div>
         </div>
         <div class="banner_bottom">
-            <%@ include file="../banners/bottom.jsp" %>
+            <%@ include file="../banners/bottom1.jsp" %>
         </div>
     </div>
 

@@ -1,9 +1,6 @@
-<%@ page pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html;charset=UTF-8"
+         pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<link rel="stylesheet" type="text/css" href="/css/top.css">
-<link rel="stylesheet" type="text/css" href="/css/bottom.css">
-<script src="/js/top.js"></script> <!-- 배너 -->
-<script src="/js/bottom.js"></script> <!-- 배너 -->
 <div class="banner-left">
     <div class="nav-logout-links">
         <c:choose>
@@ -17,10 +14,11 @@
                 </span>
             </c:when>
             <%--        관리자 로그인      --%>
-            <c:when test="${userSession.userRole eq 'ADMIN'}">
+            <c:when test="${userSession.userId eq 'ADMIN'}">
                 <span class="nav-item">
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
+
                 <div  class="dropdown">
                     <span class="nav-item dropdown">
                         <a class="menu" href="/">Contents</a>
@@ -36,7 +34,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
+                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
                         <a class="menu" href="/CS/Inquiry">Admin</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
@@ -44,9 +42,8 @@
             </c:when>
             <%--      일반회원 로그인     --%>
             <c:when test="${userSession.userRole eq 'USER'}">
-                <span class="nav-item">
-                    <a class="menu" href="/WordBook/List">Vocabulary</a>
-                </span>
+                <span class="nav-item" id="vocabulary">Vocabulary</span>
+
                 <div  class="dropdown">
                     <span class="nav-item dropdown" id="contents">Contents</span>
                     <div class="dropdown-menu">
@@ -60,7 +57,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
+                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
                 </div>

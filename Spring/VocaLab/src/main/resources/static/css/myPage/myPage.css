@@ -15,6 +15,12 @@ h1 {
     font-size: 30px;
 }
 
+.mypage-line{
+    border-bottom: 1px solid #d3d3d3;
+    margin-bottom: 20px;
+    width: 80%;
+}
+
 /* 사이드바 스타일 */
 .sidebar {
     min-width: 200px;
@@ -139,6 +145,30 @@ li:hover {
     background-color: #919090;
 }
 
+.noHistory {
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #495057;
+}
+
+.noHistory>a {
+    margin-top: 5px;
+    color: #5f6368;
+    cursor: pointer;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-block;
+    border-bottom: 1px solid #5f6368;
+}
+
+.noHistory>a:hover {
+    border-bottom: 1px solid black;
+    color: black;
+}
+
 /*userInfo.jsp*/
 .member-info-list{
     display: flex;
@@ -151,7 +181,7 @@ li:hover {
     align-items: center;
 }
 
-.menu{
+.users{
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -163,7 +193,7 @@ li:hover {
 
 }
 
-.menu div, .info-list label{
+.users div, .info-list label{
     margin-bottom: 2px;
     padding-top: 3px;
     /*text-align: center;*/
@@ -180,6 +210,7 @@ input[type="password"], input[type="text"], input[type="email"]
     width: 100%;
     height: 22px;
     margin-left: 5px;
+    margin-bottom: 5px;
 }
 
 /*userModify.jsp*/

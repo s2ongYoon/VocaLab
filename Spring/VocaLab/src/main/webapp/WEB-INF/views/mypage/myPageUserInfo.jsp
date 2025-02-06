@@ -7,10 +7,10 @@
         <meta charset="UTF-8">
         <title>VocaLab-mypage</title>
         <!-- CSS 파일 경로 -->
-        <link rel="stylesheet" type="text/css" href="/css/top.css">
-        <link rel="stylesheet" type="text/css" href="/css/bottom.css">
         <link rel="stylesheet" type="text/css" href="/css/global.css">
         <link rel="stylesheet" type="text/css" href="/css/myPage/myPage.css">
+        <!-- jQuery CDN -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- JavaScript 파일 경로 -->
         <script src="/js/top.js"></script> <!-- 배너 -->
         <script src="/js/bottom.js"></script> <!-- 배너 -->
@@ -19,7 +19,7 @@
     <body>
         <div class="mypage-container">
             <div id="banner_top" role="banner">
-                <%@ include file="../banners/top_left.jsp" %>
+                <%@ include file="../banners/top_left1.jsp" %>
             </div>
             <div class="mypage-main-container">
 
@@ -35,11 +35,12 @@
                 </div>
                 <div class="member-info-page">
                     <h1>회원 상세 정보</h1>
-                    <form name="modifyForm" action="userModify" method="post">
+                    <div class="mypage-line"></div>
+                    <form name="infoForm" action="checkPassword" method="post">
                         <div class="member-info-list">
-                            <span class="info-list menu">
+                            <span class="info-list users">
                                 <div>아이디: </div>
-                                <label for="password">비밀번호: </label>
+                                <label for="password" id="passLabel">비밀번호: </label>
                                 <div>이름: </div>
                                 <div>닉네임: </div>
                                 <div>이메일: </div>
@@ -48,11 +49,11 @@
                             </span>
                             <span class="info-list user">
                                 <div>${user.userId}</div>
-                                <input type="password" name="password" id="password">
+                                <input type="password" name="userPassword" id="password">
                                 <div>${user.userName}</div>
                                 <div>${user.userNickname}</div>
                                 <div>${user.userEmail}</div>
-                                <div>${user.birthDate}</div>
+                                <div>${birth}</div>
                                 <div>
                                     <c:choose>
                                         <c:when test="${user.gender eq 1}" >
@@ -71,7 +72,7 @@
 
             </div>
             <div class="banner_bottom">
-                <%@ include file="../banners/bottom.jsp" %>
+                <%@ include file="../banners/bottom1.jsp" %>
             </div>
         </div>
     </body>

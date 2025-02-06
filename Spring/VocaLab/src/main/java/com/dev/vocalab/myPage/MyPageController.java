@@ -7,11 +7,12 @@ import com.dev.vocalab.users.details.AuthenticationUtil;
 import com.dev.vocalab.wordbooks.WordBooksEntity;
 import com.dev.vocalab.wordbooks.WordBooksService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,8 @@ public class MyPageController {
     private final UsersRepository usersRepository;
     private final WordBooksService wordBookService;
     private final MyPageService myPageService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
 
     // [ 단어기록 ]
     @RequestMapping("/compileHistory")
@@ -62,6 +65,7 @@ public class MyPageController {
     // [ 회원정보 ]
     @GetMapping("/userInformation")
     public String myPageUserInfo(Model model) {
+
         System.out.println("myPageUserInfo");
         // 인증 확인
         if (!AuthenticationUtil.isAuthenticated()) {
@@ -71,17 +75,42 @@ public class MyPageController {
         String userId = AuthenticationUtil.getCurrentUserId();
         System.out.println("userId: " + userId);
         Optional<UsersEntity> users = usersRepository.findByUserId(userId);
+        System.out.println("users: " + users.toString());
+        String userBirthday = users.get().getBirthDate();
+        System.out.println("userBirthday: " + userBirthday);
+
+        String year = userBirthday.substring(0, 4);
+        String month = userBirthday.substring(4, 6);
+        String day = userBirthday.substring(6, 8);
+
+        String birth = year + "-" + month + "-" + day;
+
+        System.out.println("birth: " + birth);
 
         model.addAttribute("user", users.get());
+        model.addAttribute("birth", birth);
 
         return "mypage/myPageUserInfo";
     }
 
+//    @PostMapping("/checkPassword")
+//    public String checkPassword(@RequestParam("password") String password, Model model) {
+//        if (!AuthenticationUtil.isAuthenticated()) {
+//            return "redirect:/login";
+//        }
+//        String userId = AuthenticationUtil.getCurrentUserId();
+//        System.out.println("userId: " + userId);
+//        Optional<UsersEntity> users = usersRepository.findByUserId(userId);
+//
+////        if (users.get().getUserPassword().equals(password)) {}
+//        return "redirect:userModify";
+//
+//    }
+
     // [ 회원정보수정 뷰 ]
-    @PostMapping("/userModify")
-    public String myPageUserModify(Model model, @RequestParam("password") String password) {
+    @GetMapping("/userModify")
+    public String myPageUserModify(Model model) {
         System.out.println("myPageUserModify");
-        System.out.println("password: " + password);
         // 인증 확인
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
@@ -91,8 +120,12 @@ public class MyPageController {
         System.out.println("userId: " + userId);
         Optional<UsersEntity> users = usersRepository.findByUserId(userId);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String birth = sdf.format(users.get().getCreatedAt());
+        String userBirthday = users.get().getBirthDate();
+        String year = userBirthday.substring(0, 4);
+        String month = userBirthday.substring(4, 6);
+        String day = userBirthday.substring(6, 8);
+
+        String birth = year + "-" + month + "-" + day;
 
         model.addAttribute("user", users.get());
         model.addAttribute("birth", birth);
@@ -100,19 +133,43 @@ public class MyPageController {
         return "mypage/myPageUserModify";
     }
 
-    // [ 회원정보 수정 버튼 ]
+    // [ 회원정보 수정 버튼 ] - test 해봐야함
     @PostMapping("/userModifyPro")
     public String myPageUserModifyPro(Model model,
-                                      @RequestParam("password") String password) {
+                                      @RequestParam("userNickname") String nickName) {
+        System.out.println("myPageUserModifyPro");
+        System.out.println("nickName: " + nickName);
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String userId = AuthenticationUtil.getCurrentUserId();
 
-        return "";
+        myPageService.modifyNickName(userId,nickName);
+
+        return "redirect:userInformation";
     }
 
-    // [ 비밀번호 조건 확인 - 대소문자 영문 특수문자]
+    // [ 비밀번호 입력 후 확인 ]
     @PostMapping("/checkPassword")
     @ResponseBody
-    public String checkPassword(@RequestParam("password") String password) {
-        return "";
+    public String checkPassword(@RequestParam("userPassword") String password) {
+        System.out.println("checkPassword");
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        String userId = AuthenticationUtil.getCurrentUserId();
+        System.out.println("password : " + password);
+
+        UsersEntity user = usersRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(password, user.getUserPassword())) {
+            return "fail"; // 비밀번호 불일치 시 "fail" 반환
+        }
+
+        return "success"; // 비밀번호 일치 시 "success" 반환
     }
 
 } // class
