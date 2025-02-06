@@ -27,16 +27,19 @@ public class CompileService {
 
     // [ compilePro ]
     @Transactional
-    public List<Map<String, Object>> compileProService(CompileRecordEntity com, FilesEntity files, List<MultipartFile> multipartFiles) {
+    public List<Map<String, Object>> compileProService(CompileRecordEntity com, FilesEntity files, List<MultipartFile> multipartFiles, String userId) {
         System.out.println("compileProService");
+        System.out.println("com: " + com.getCompileId());
         try {
-            // < 1. CompileRecord INSERT > - 단어 추출 기록= -------------
-            com = compileRecordRepository.save(com);
-            System.out.println("insert result com : " + com);
-
-            // < 2 원본 파일이 있다면 처리 후 저장, 없다면 넘어가기 > - 원본 파일 저장 ------------
             List<FilesDTO> filesDto = new ArrayList<>();
             FilesDTO fileDto;
+            // 이미 기록 되어 있다면 compileRecord, Files insert 생략
+            if(com.getCompileId() == 0){
+                // < 1. CompileRecord INSERT > - 단어 추출 기록= -------------
+                com = compileRecordRepository.save(com);
+                System.out.println("insert result com : " + com);
+
+                // < 2 원본 파일이 있다면 처리 후 저장, 없다면 넘어가기 > - 원본 파일 저장 ------------
                 for (MultipartFile multipartFile : multipartFiles) {
                     System.out.println("for - file : " + multipartFile.getOriginalFilename());
                     System.out.println("for문");
@@ -70,8 +73,6 @@ public class CompileService {
                         System.out.println("Executable: " + executable);
 
                         // 3-2. 서버에 파일 저장
-//                        part.write(saveDir + File.separator + originalFileName);
-//                        System.out.println("4. 파일을 원본 파일명으로 저장 : " + part.toString());
                         multipartFile.transferTo(new File(saveDir, originalFileName));
 
                         // 3-3. DB에 저장할 filePath데이터 생성(uuid와 경로를 더해 filePath에 저장)
@@ -93,14 +94,17 @@ public class CompileService {
                         // files에 data넣기
                         files.setUserId(com.getUserId());
                         files.setCategory(FilesEntity.Category.COMPILE);
-                        files.setFilePath(dbFilePath);
+                        files.setFilePath(File.separator + dbFilePath);
                         files.setFileType(FilesEntity.FileType.valueOf(fileDto.getFileType()));
                         files.setUploadedAt(com.getCreatedAt());
                         // files TableId = compileId
                         files.setTableId(com.getCompileId());
                         System.out.println("원본 파일 저장 완료 files : " + files);
                         // insert
-                        files = filesRepository.save(files);
+
+                        files = filesRepository.saveAndFlush(files);
+
+
                         System.out.println("DB 저장 결과 - files: " + files);
 
                         System.out.println("filesDto : " + filesDto);
@@ -110,8 +114,24 @@ public class CompileService {
                         System.out.println("filesDto : " + filesDto);
                     }// if
                 } // for
-            System.out.println("for문 나옴");
+                System.out.println("for문 나옴");
+
+            } else {
+                // compileId가 존재하면 해당기록 불러오기
+                System.out.println("mypage에서 기록으로 단어 추출하기");
+                com = compileRecordRepository.findByUserIdAndCompileId(userId, com.getCompileId());
+                List<FilesEntity> filesList = filesRepository.findByTableIdAndCategoryAndUserId(com.getCompileId(), FilesEntity.Category.COMPILE, userId);
+                for (FilesEntity file :filesList){
+                    String saveDir = file.getFilePath();
+                    System.out.println("saveDir : " + saveDir);
+                    String originalFileName = "";
+                    String fileExtension = originalFileName.split("\\.")[1];
+                    fileDto = new FilesDTO(saveDir, originalFileName, fileExtension);
+                    filesDto.add(fileDto);
+                }
+            } // if(complieId)
 //             < 3. python 처리 >
+            System.out.println("comSouce : " + com.getSource());
             List<Map<String, Object>> compileWordsJson = new ArrayList<>();
             compileWordsJson = FileHandler.AICompileWords(com.getSource(), filesDto);
             System.out.println("compileWordsJson : " + compileWordsJson);
@@ -133,27 +153,27 @@ public class CompileService {
 
             List<Map<String, Object>> wordList = FileHandler.saveResultCSV(compileWordsJson, saveCsv); // csv파일로 변환 후 저장
 
-            String[] dir = saveDir.split("static/");
-            String dbPath = "";
-            if (dir.length > 1) {
-                // "static/" 이후의 문자열을 가져오기
-                dbPath = dir[1];
-                System.out.println("추출된 문자열: " + dbPath);
-            } else {
-                System.out.println("경로에 'static/'이 포함되어 있지 않습니다.");
-            }
-
-            String dbFilePath = FileHandler.renameFile(dbPath, fileDto.getOriginalFileName()); // 서버 파일 저장
-            int tableId = com.getCompileId();
-
-            files.setUserId(com.getUserId());
-            files.setCategory(FilesEntity.Category.COMPILERESULT);
-            files.setFilePath(dbFilePath);
-            files.setFileType(FilesEntity.FileType.FILE);
-            files.setUploadedAt(com.getCreatedAt());
-            files.setTableId(tableId);
-            files = filesRepository.save(files);
-            System.out.println("csv 저장 완료 files : " + files);
+//            String[] dir = saveDir.split("static/");
+//            String dbPath = "";
+//            if (dir.length > 1) {
+//                // "static/" 이후의 문자열을 가져오기
+//                dbPath = dir[1];
+//                System.out.println("추출된 문자열: " + dbPath);
+//            } else {
+//                System.out.println("경로에 'static/'이 포함되어 있지 않습니다.");
+//            }
+//
+//            String dbFilePath = FileHandler.renameFile(dbPath, fileDto.getOriginalFileName()); // 서버 파일 저장
+//            int tableId = com.getCompileId();
+//
+//            files.setUserId(com.getUserId());
+//            files.setCategory(FilesEntity.Category.COMPILERESULT);
+//            files.setFilePath(dbFilePath);
+//            files.setFileType(FilesEntity.FileType.FILE);
+//            files.setUploadedAt(com.getCreatedAt());
+//            files.setTableId(tableId);
+//            files = filesRepository.save(files);
+//            System.out.println("csv 저장 완료 files : " + files);
 
             return wordList; // python에서 받아온 json데이터
         } catch (Exception e) {

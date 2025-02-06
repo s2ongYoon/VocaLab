@@ -65,12 +65,13 @@ public class CompileController {
     public List<Map<String, Object>> compilePro(CompileRecordEntity com, FilesEntity files, List<MultipartFile> multipartFiles) {
         System.out.println("compilePro");
         System.out.println("urlTextData : " + com.getSource());
+        String userId = AuthenticationUtil.getCurrentUserId();
         List<Map<String, Object>> wordList = new ArrayList<>();
 
         try {
             // 2개 이상의 파일이므로 getParts() 메서드를 통해 폼값을 받음
             // < 1. 단어 추출 기록, 원본파일, 단어장, 단어  insert >
-            wordList = compileService.compileProService(com, files, multipartFiles);
+            wordList = compileService.compileProService(com, files, multipartFiles, userId);
             System.out.println("compilePro - compileRecord, Files insert 성공");
 
         } catch( Exception e ) {

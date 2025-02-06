@@ -12,21 +12,20 @@ import google.generativeai as genai # Google Gemini API
 from config import Config
 from dotenv import load_dotenv
 
-# .env 파일 로드
-load_dotenv('../env/api.env')
-
 app = Flask(__name__)
 CORS(app)
 
 # Tesseract 경로 설정
-pytesseract.pytesseract.tesseract_cmd = r"/opt/anaconda3/envs/pydatavenv/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
+# .env 파일 로드
+load_dotenv('../env/api.env')
 
 # Google Gemini API 설정
 genai.configure(api_key=os.getenv('gemini_api_key'))
 system_instruction = (
                         f"단어를 json으로 만들 때 관사, be 동사, 인칭 대명사, 지시 대명사, 고유 명사(사람 이름, 회사 이름 등)는 제외해주세요."
                         f"중복된 단어는 제거하고, 최소 1개에서 최대 200개의 단어를 소문자로 보여주세요."
-                        f"jsonArray중 json데이터의 key는 ""단어"", ""뜻"" 두개가 오고, key가 ""단어""인 value에는 영어단어가, key가 ""뜻""인 value에는 품사와 단어뜻을 넣어주세요."
+                        f"jsonArray중 json데이터의 key는 ""단어"", ""뜻"" 한개만 오고, key가 ""단어""인 value에는 영어단어가, key가 ""뜻""인 value에는 품사와 단어뜻을 넣어주세요."
                         f"뜻은 무조건 한국어입니다 뜻 앞에 품사의 영어약어도 함께 넣어주세요., json데이터의 key도 한글로 작성해 주세요"
                         f"결과에는 어떠한 말도 넣지 말고 json데이터만 반환해 주세요"
                     ) 
@@ -42,7 +41,7 @@ def compile_word():
         compile_source = data.get("compileSource")  # URL 또는 텍스트 데이터
         original_files = data.get("originalFiles", [])  # 파일 데이터 리스트
         print(f"파일 유무 확인 : {original_files}")
-        base_url = "http://localhost:8081"  # Spring 서버 주소
+        base_url = "https://vocalab.21v.in"  # Spring 서버 주소
 
         file_data = ""  # 파일 처리 결과 저장
         source_type = ""  # 데이터 타입 지정
@@ -132,12 +131,12 @@ def process_uploaded_files(files, base_url):
         if isinstance(file_path, list):
             file_path = "/".join(file_path)  # 리스트를 문자열로 변환
         
-        file_path_parts = file_path.split("static",1)
-        if len(file_path_parts) > 1:
-        # uploads 이후의 문자열 (앞에 '/'가 있다면 그대로 사용)
-            file_path_str = file_path_parts[1]
-        else:
-            file_path_str = file_path_parts[0]
+        # file_path_parts = file_path.split("",1)
+        # if len(file_path_parts) > 1:
+        # # uploads 이후의 문자열 (앞에 '/'가 있다면 그대로 사용)
+        #     file_path_str = file_path_parts[1]
+        # else:
+        #     file_path_str = file_path_parts[0]
             
         download_url = f"{base_url}{file_path_str}/{file_name}"
         print(f"processfiles-{download_url}")

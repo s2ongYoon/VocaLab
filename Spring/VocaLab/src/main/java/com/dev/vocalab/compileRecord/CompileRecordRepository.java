@@ -12,4 +12,7 @@ public interface CompileRecordRepository extends JpaRepository<CompileRecordEnti
     // home에서 표시할 compileRecord
     List<CompileDTO> findByUserIdOrderByCreatedAtDesc(String userId);
 
+    List<CompileRecordEntity> findByUserId(String userId);
+
+    CompileRecordEntity findByUserIdAndCompileId(String userId, int compileId);
 }
