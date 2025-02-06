@@ -109,7 +109,6 @@ public class UsersService {
 
         return null;
     }
-
     public void deleteUser(Authentication authentication, HttpServletRequest request) {
         String userId;
 
