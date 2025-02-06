@@ -34,7 +34,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
+                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/CS/Inquiry">Admin</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
@@ -57,7 +57,7 @@
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
+                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
                 </div>

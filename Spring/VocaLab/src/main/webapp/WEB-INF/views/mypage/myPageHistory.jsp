@@ -7,6 +7,8 @@
         <meta charset="UTF-8">
         <title>VocaLab-mypage</title>
         <!-- CSS 파일 경로 -->
+        <link rel="stylesheet" type="text/css" href="/css/top.css">
+        <link rel="stylesheet" type="text/css" href="/css/bottom.css">
         <link rel="stylesheet" type="text/css" href="/css/global.css">
         <link rel="stylesheet" type="text/css" href="/css/myPage/myPage.css">
         <!-- jQuery CDN -->
@@ -62,7 +64,7 @@
                                                         <input type="file" name="files" multiple hidden>
                                                         <c:choose>
                                                             <c:when test="${record.daysAgo < 1}" >
-                                                                (오늘)
+                                                                (${record.hoursAgo}시간 전)
                                                             </c:when>
                                                             <c:otherwise>
                                                                 (${record.daysAgo}일 전)

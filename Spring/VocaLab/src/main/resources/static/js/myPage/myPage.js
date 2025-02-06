@@ -51,22 +51,6 @@ $(document).ready(function() {
         isAllChecked = allChecked; // 전체 선택 상태 업데이트
     }
 
-    // 무한 스크롤 구현 (단순 예시)
-    let pageNum = 1;
-    const $recordList = $("#record-list");
-
-    $(window).on("scroll", function() {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
-            loadMoreRecords();
-        }
-    });
-
-    function loadMoreRecords() {
-        const newRecords = $("<div>").html(`<p>기록 ${pageNum++} (몇일 전)</p>`);
-        $recordList.append(newRecords);
-    }
-
-
     //UserInfo.jsp
     $("#modifyBtn").on("click", function (event) {
         console.log("click");

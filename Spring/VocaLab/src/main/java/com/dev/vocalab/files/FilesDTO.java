@@ -18,10 +18,18 @@ public class FilesDTO {
     private String subDir;
     private String originalFileName;
 
+
     public FilesDTO(String userId, String compileId, String originalFileName) {
         this.userId = userId;
         this.compileId = compileId;
         this.originalFileName = originalFileName;
+    }
+
+    public FilesDTO(String saveDir, String originalFileName, String fileExtension, String subDir) {
+        this.saveDir = saveDir;
+        this.originalFileName = originalFileName;
+        this.fileExtension = fileExtension;
+        this.subDir = subDir;
     }
 
 

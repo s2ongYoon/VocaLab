@@ -37,16 +37,20 @@ public class MyPageService {
     // [ myPageRecord - 단어기록 ]
     public List<CompileDTO> getCompileRecordList(String userId) {
         System.out.println("MyPageService - getCompileRecordList");
+
         List<CompileRecordEntity> recordList = compileRecordRepository.findByUserId(userId);
         System.out.println("recordList: " + recordList);
+
+        // < 일자 계산 >
         List<CompileDTO> comList = new ArrayList<>();
         for (CompileRecordEntity record : recordList) {
             LocalDateTime now = LocalDateTime.now(); // 현재 날짜 및 시간
             LocalDateTime recordDateTime = record.getCreatedAt(); // 기록 시간
+
             System.out.println("recordDateTime: " + recordDateTime);
             long hoursBetween = Duration.between(recordDateTime, now).toHours();
             System.out.println("hoursBetween: " + hoursBetween);
-            int daysBetween = (int)(hoursBetween / 24);
+            long daysBetween = hoursBetween / 24;
             System.out.println("daysBetween: " + daysBetween);
 
             System.out.println("record : " + record);
@@ -57,6 +61,7 @@ public class MyPageService {
             com.setSource(record.getSource());
             com.setCreatedAt(record.getCreatedAt());
             com.setDaysAgo(daysBetween);
+            com.setHoursAgo(hoursBetween);
             System.out.println("com : " + com);
 
             comList.add(com);

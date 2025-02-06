@@ -53,6 +53,16 @@
     width: 100px;
 }
 
+.befor-login {
+    margin: 0 15px;
+    cursor: pointer;
+    position: relative;
+}
+
+.befor-login:hover {
+    color: #757474;
+}
+
 .nav-item {
     margin: 0 15px;
     cursor: pointer;

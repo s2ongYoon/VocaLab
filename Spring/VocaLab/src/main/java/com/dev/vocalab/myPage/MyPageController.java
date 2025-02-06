@@ -36,7 +36,9 @@ public class MyPageController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
+        AuthenticationUtil.addUserSessionToModel(model);
         String userId = AuthenticationUtil.getCurrentUserId();
+
         List<CompileDTO> recordList = myPageService.getCompileRecordList(userId);
         System.out.println("recordList: " + recordList);
 
@@ -47,13 +49,16 @@ public class MyPageController {
 
     // [ 기록중 다시 단어추가 기능 ]
     @RequestMapping("/recordAddWords")
-    public String recordAddWords(Map<String,Object> map, @RequestParam("compileId")int compileId) {
+    public String recordAddWords(Map<String,Object> map, @RequestParam("compileId")int compileId, Model model) {
         System.out.println("recordAddWords");
         System.out.println("compileId: " + compileId);
+
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
+        AuthenticationUtil.addUserSessionToModel(model);
         String userId = AuthenticationUtil.getCurrentUserId();
+
         // < 단어장 목록 불러오기 >
         List<WordBooksEntity> wordBookList = wordBookService.getWordBooks(userId);
         System.out.println("wordBookList" + wordBookList.toString());
@@ -71,8 +76,9 @@ public class MyPageController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
-
+        AuthenticationUtil.addUserSessionToModel(model);
         String userId = AuthenticationUtil.getCurrentUserId();
+
         System.out.println("userId: " + userId);
         Optional<UsersEntity> users = usersRepository.findByUserId(userId);
         System.out.println("users: " + users.toString());
@@ -115,8 +121,9 @@ public class MyPageController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
-
+        AuthenticationUtil.addUserSessionToModel(model);
         String userId = AuthenticationUtil.getCurrentUserId();
+
         System.out.println("userId: " + userId);
         Optional<UsersEntity> users = usersRepository.findByUserId(userId);
 
@@ -157,8 +164,8 @@ public class MyPageController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
-
         String userId = AuthenticationUtil.getCurrentUserId();
+
         System.out.println("password : " + password);
 
         UsersEntity user = usersRepository.findByUserId(userId)

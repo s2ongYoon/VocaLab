@@ -9,12 +9,12 @@
         <c:choose>
             <%--        로그아웃       --%>
             <c:when test="${empty userSession.userId}">
-                <span class="nav-item">
+<%--                <span class="nav-item">--%>
                     <a class="menu" href="/login">Login</a>
-                </span>
-                <span class="nav-item">
+<%--                </span>--%>
+<%--                <span class="nav-item">--%>
                     <a class="menu" href="/register">SignUp</a>
-                </span>
+<%--                </span>--%>
             </c:when>
             <%--        관리자 로그인      --%>
             <c:when test="${userSession.userRole eq 'ADMIN'}">

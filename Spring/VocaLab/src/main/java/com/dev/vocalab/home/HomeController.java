@@ -15,9 +15,6 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
 
-        if (!AuthenticationUtil.isAuthenticated()) {
-            return "redirect:/login";
-        }
         AuthenticationUtil.addUserSessionToModel(model);
 
         return "home";

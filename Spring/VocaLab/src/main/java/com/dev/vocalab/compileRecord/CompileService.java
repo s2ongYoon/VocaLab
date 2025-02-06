@@ -124,18 +124,38 @@ public class CompileService {
                 System.out.println("for문 나옴");
 
             } else {
-               // compileId가 존재하면 해당기록 불러오기
+               // compileId가 존재하면 해당기록 불러오기 (기록 저장 할 필요없고, 파일도 저장 할 필요 없음)
                 System.out.println("mypage에서 기록으로 단어 추출하기");
+
+                fileDto = new FilesDTO();
+                fileDto.setUserId(userId);
+                System.out.println("기록-fileDto : " + fileDto);
                 com = compileRecordRepository.findByUserIdAndCompileId(userId, com.getCompileId());
+                System.out.println("기록-com : " + com);
+                fileDto.setCompileId(Integer.toString(com.getCompileId()));
+
                 List<FilesEntity> filesList = filesRepository.findByTableIdAndCategoryAndUserId(com.getCompileId(), FilesEntity.Category.COMPILE, userId);
+                System.out.println("기록-filesList : " + filesList);
                 for (FilesEntity file :filesList){
-                    String saveDir = file.getFilePath();
-                    System.out.println("saveDir : " + saveDir);
-                    String originalFileName = "";
+                    System.out.println("기록으로 for문");
+                    String Dir = file.getFilePath();
+                    String saveDir = "";
+                    if(file.getFilePath().contains("img")) {
+                        saveDir = Dir.split("img/")[0] + "img/";
+                        System.out.println("img 폴더 saveDir : " + saveDir);
+                    } else {
+                        saveDir = Dir.split("doc/")[0] + "doc/";
+                        System.out.println("doc 폴더 saveDir : " + saveDir);
+                    }
+
+                    System.out.println("기록-saveDir : " + Dir);
+                    String originalFileName = Dir.split("_")[1];
+                    System.out.println("기록에서 단어추출 중 - files데이터 uuid뺌 : " + originalFileName);
                     String fileExtension = originalFileName.split("\\.")[1];
-                    fileDto = new FilesDTO(saveDir, originalFileName, fileExtension);
+                    fileDto = new FilesDTO(saveDir, originalFileName, fileExtension, "");
                     filesDto.add(fileDto);
                 }
+                System.out.println("기록-ilesDto : " + filesDto);
             } // if(complieId)
 //             < 3. python 처리 >
             System.out.println("comSouce : " + com.getSource());

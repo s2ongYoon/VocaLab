@@ -75,15 +75,16 @@ public class CompileController {
     // [ 단어 선택 페이지 이동 메서드 - WordBookService ] -미완:compileRecord 중 csv파일 불러와서 단어와 뜻 데이터 뿌리기
     @RequestMapping("/result")
     public String resultForm(Map<String,Object> map, CompileRecordEntity com, FilesEntity files,
-                             @RequestParam("files")List<MultipartFile> multipartFiles) {
+                             @RequestParam("files")List<MultipartFile> multipartFiles, Model model) {
         System.out.println("resultForm");
         System.out.println("com: " + com);
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
+        AuthenticationUtil.addUserSessionToModel(model);
         String userId = AuthenticationUtil.getCurrentUserId();
-        // < compilePro - insert compileRecord, insert originalFile, insert resultFile  >
 
+        // < compilePro - insert compileRecord, insert originalFile, insert resultFile  >
         com.setUserId(userId);
         List<Map<String, Object>> response = compilePro(com, files, multipartFiles);
         System.out.println("result - response : " + response.toString());
@@ -101,6 +102,7 @@ public class CompileController {
     public List<Map<String, Object>> compilePro(CompileRecordEntity com, FilesEntity files, List<MultipartFile> multipartFiles) {
         System.out.println("compilePro");
         System.out.println("urlTextData : " + com.getSource());
+
         String userId = AuthenticationUtil.getCurrentUserId();
         List<Map<String, Object>> wordList = new ArrayList<>();
 
@@ -120,7 +122,7 @@ public class CompileController {
     // [ 단어장 생성하기 - wordBook ] -완성
     @RequestMapping("/addWordbook")
     @ResponseBody
-    public WordBooksEntity addWordbookAjax(@RequestParam("wordBookTitle") String wordBookTitle) {
+    public WordBooksEntity addWordbookAjax(@RequestParam("wordBookTitle") String wordBookTitle, Model model) {
         System.out.println("addWordbookAjax");
 
         String userId = AuthenticationUtil.getCurrentUserId();
@@ -145,8 +147,8 @@ public class CompileController {
         if (!AuthenticationUtil.isAuthenticated()) {
             return "redirect:/login";
         }
+
         String userId = AuthenticationUtil.getCurrentUserId();
-        AuthenticationUtil.addUserSessionToModel(model);
         String result = "";
 
         List<String> wordBookIds = map.get("ids");
@@ -168,6 +170,9 @@ public class CompileController {
         System.out.println("word" + word);
         System.out.println("meaning" + meaning);
 //      < 로그인 후 - 기능 사용 가능 : 일단 로그아웃이면 로그인 페이지로 이동 >
+        if (!AuthenticationUtil.isAuthenticated()) {
+            return "redirect:/login";
+        }
         String userId = AuthenticationUtil.getCurrentUserId();
 
     //  < 저장할 데이터 csv로 저장 >
