@@ -66,14 +66,23 @@
                         </div>
                     </div>
                     <div>
-                        <button type="submit">회원정보 수정</button>
+                        <button class="modify-submitBtn" type="submit">회원정보 수정</button>
                     </div>
                 </form>
-                <a onclick="location.href='/delete'" class="withdraw">회원탈퇴</a>
+                <a class="withdraw">회원탈퇴</a>
             </div>
         </div>
         <div class="banner_bottom">
             <%@ include file="../banners/bottom1.jsp" %>
+        </div>
+<%--        회원탈퇴를 클릭하면 뜨는 모달창 --%>
+        <div class="modal-overlay"></div>
+        <div class="modal" id="withdrawModal">
+            <p>회원탈퇴를 진행하시겠습니까?<br>탈퇴를 진행하시려면 아래 문장을 입력하세요.</p>
+            <p><strong>"회원탈퇴 하겠습니다"</strong></p>
+            <input type="text" id="withdrawInput">
+            <button id="confirmWithdraw">확인</button>
+            <button id="cancelWithdraw">취소</button>
         </div>
     </div>
 
