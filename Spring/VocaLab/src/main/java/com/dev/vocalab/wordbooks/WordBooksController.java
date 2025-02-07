@@ -1,25 +1,22 @@
 package com.dev.vocalab.wordbooks;
 
 import com.dev.vocalab.files.FilesService;
-import com.dev.vocalab.oauth2.users.CustomOAuth2Users;
-import com.dev.vocalab.oauth2.users.CustomOIDCUsers;
 import com.dev.vocalab.users.UsersEntity;
 import com.dev.vocalab.users.UsersRepository;
 import com.dev.vocalab.users.details.AuthenticationUtil;
-import com.dev.vocalab.users.details.CustomUsersDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
-import java.time.ZoneId;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequestMapping("/WordBook")

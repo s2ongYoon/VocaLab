@@ -141,7 +141,7 @@ $(document).ready(function () {
         $('#wordDetailModal').modal('show');
 
         $.ajax({
-            url: 'http://localhost:5002/Python/word-mean',
+            url: 'https://pywm.21v.in/Python/word-mean',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ word: word }),

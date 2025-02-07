@@ -138,6 +138,7 @@ public class SecurityConfig {
                                 "/fonts/**",
                                 "/static/**"
                         ).permitAll()
+                        .requestMatchers("/compile/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")  // 컴파일 관련 경로 권한 설정
                         .requestMatchers("/**").permitAll()
         );
 

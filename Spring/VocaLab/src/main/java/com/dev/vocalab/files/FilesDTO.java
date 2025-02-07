@@ -24,5 +24,11 @@ public class FilesDTO {
         this.originalFileName = originalFileName;
     }
 
+    public FilesDTO(String saveDir, String originalFileName, String fileExtension, String subDir) {
+        this.saveDir = saveDir;
+        this.originalFileName = originalFileName;
+        this.fileExtension = fileExtension;
+        this.subDir = subDir;
+    }
 
 }

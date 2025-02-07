@@ -10,7 +10,7 @@
                 (주) VocaLab | 대표이사 이한빈 |
                 이용약관
                 개인정보취급방침 |
-                <a href="CS/Notice">
+                <a href="/CS/Notice">
                     <span id="cs">고객센터</span>
                 </a>
             </p>

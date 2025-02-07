@@ -22,7 +22,7 @@
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
                 <div  class="dropdown">
-                    <span class="nav-item dropdown">
+                    <span class="nav-item dropdown hover">
                         <a class="menu" href="/">Contents</a>
                     </span>
                     <div class="dropdown-menu">
@@ -32,11 +32,11 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown">
+                    <span class="nav-item dropdown hover">
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
+                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/CS/Inquiry">Admin</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
@@ -48,7 +48,7 @@
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
                 <div  class="dropdown">
-                    <span class="nav-item dropdown" id="contents">Contents</span>
+                    <span class="nav-item dropdown hover" id="contents">Contents</span>
                     <div class="dropdown-menu">
                         <a class="menu"  onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
                         <a class="menu" href="/">Test</a>
@@ -56,11 +56,11 @@
                 </div>
 
                 <div  class="dropdown">
-                    <span class="nav-item dropdown" id="username">
+                    <span class="nav-item dropdown hover" id="username">
                         <b>${userSession.userNickname}</b>&nbsp;님
                     </span>
                     <div class="dropdown-menu">
-                        <a class="menu" href="/myPage/compileRecord">MyPage</a>
+                        <a class="menu" href="/myPage/compileHistory">MyPage</a>
                         <a class="menu" href="/logout">Logout</a>
                     </div>
                 </div>

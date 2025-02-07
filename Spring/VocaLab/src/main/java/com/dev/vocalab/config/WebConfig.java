@@ -27,9 +27,16 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
-
-        // 기존 설정 유지
+        // 파일 업로드 경로 핸들러들
         registry.addResourceHandler("/images/upload/board/**")
                 .addResourceLocations("file:/home/files/images/upload/board/");
+
+        // wordbooks 경로 추가
+        registry.addResourceHandler("/uploads/wordBooks/**")
+                .addResourceLocations("file:/home/files/uploads/wordBooks/");
+
+        // compile 결과 경로 추가
+        registry.addResourceHandler("/uploads/compileRecord/**")
+                .addResourceLocations("file:/home/files/uploads/compileRecord/");
     }
 }
