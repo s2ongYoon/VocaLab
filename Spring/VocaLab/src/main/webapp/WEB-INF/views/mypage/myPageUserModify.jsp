@@ -69,7 +69,7 @@
                         <button type="submit">회원정보 수정</button>
                     </div>
                 </form>
-<%--                <a onclick="" class="withdraw">회원탈퇴</a>--%>
+                <a onclick="location.href='/delete'" class="withdraw">회원탈퇴</a>
             </div>
         </div>
         <div class="banner_bottom">
