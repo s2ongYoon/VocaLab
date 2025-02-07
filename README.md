@@ -6,7 +6,7 @@
 
 - 수행 기간 : 2025.01.02 ~ 2025.02.11
 
-- 배포 주소 : <!-- 배포주소 공간입니다. -->
+- 배포 주소 : https://vocalab.21v.in/
 
 - 시연 영상 : <!-- 예시 [![Video Label](http://img.youtube.com/vi/1rwYc-_ZuvE/0.jpg)](https://youtu.be/1rwYc-_ZuvE) --> <br/>
 
