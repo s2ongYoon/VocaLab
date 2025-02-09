@@ -115,6 +115,7 @@
                             <input type="checkbox" name="wordbook-${book.wordBookId}" class="choose-wordbook" id="wordbook-${book.wordBookId}"/>
                             <input type="hidden" name="wordbookId-${book.wordBookId}" id="wordbookId-${book.wordBookId}" value="${book.wordBookId}" >
                             <span class="wordbook-name">${book.wordBookTitle}</span>
+                            <button class="modify-btn">수정</button>
                         </li>
                     </c:forEach>
                 </ul>

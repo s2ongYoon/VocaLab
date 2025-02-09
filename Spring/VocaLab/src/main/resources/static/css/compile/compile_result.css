@@ -342,3 +342,8 @@ button {
     z-index: 1000;
 }
 
+.modify-btn {
+    font-size: 14px;
+    width: 40px;
+}
+

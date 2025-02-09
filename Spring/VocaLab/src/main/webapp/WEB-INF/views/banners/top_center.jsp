@@ -22,13 +22,13 @@
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
 
-                <div  class="dropdown">
-                    <span class="nav-item dropdown hover">Contents</span>
-                    <div class="dropdown-menu">
-                        <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
-                        <a class="menu" href="/">Test</a>
-                    </div>
-                </div>
+<%--                <div  class="dropdown">--%>
+<%--                    <span class="nav-item dropdown hover">Contents</span>--%>
+<%--                    <div class="dropdown-menu">--%>
+<%--                        <a class="menu">AI Essay</a>--%>
+<%--                        <a class="menu" href="/">Test</a>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
 
                 <div  class="dropdown">
                     <span class="nav-item dropdown hover"><b>${userSession.userNickname}</b>&nbsp;님</span>
@@ -44,13 +44,13 @@
                 <span class="nav-item">
                     <a class="menu" href="/WordBook/List">Vocabulary</a>
                 </span>
-                <div  class="dropdown">
-                    <span class="nav-item dropdown hover" id="contents">Contents</span>
-                    <div class="dropdown-menu">
-                        <a class="menu" onclick="alert('죄송합니다. 페이지 준비 중 입니다.')">AI Essay</a>
-                        <a class="menu" href="/">Test</a>
-                    </div>
-                </div>
+<%--                <div  class="dropdown">--%>
+<%--                    <span class="nav-item dropdown hover" id="contents">Contents</span>--%>
+<%--                    <div class="dropdown-menu">--%>
+<%--                        <a class="menu">AI Essay</a>--%>
+<%--                        <a class="menu" href="/">Test</a>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
 
                 <div  class="dropdown">
                     <span class="nav-item dropdown hover" id="username"><b>${userSession.userNickname}</b>&nbsp;님</span>

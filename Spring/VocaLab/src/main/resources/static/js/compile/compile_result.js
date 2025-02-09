@@ -168,6 +168,145 @@ $(document).ready(function () {
         }
     }); //delete btn
 
+    // // 단어장 이름 수정
+    // $(".modify-btn").click(function () {
+    //     let originalName = $(this).text().trim();
+    //     let wordbookId = $(this).data("id");
+    //     console.log(wordbookId + "split")
+    //
+    //     // 이미 input이 있으면 중복 생성 방지
+    //     if ($(this).find("input").length) return;
+    //
+    //     // 텍스트 박스로 변경
+    //     $(this).html(`<input type="text" value="${originalName}" class="edit-input">`);
+    //     let inputBox = $(this).find(".edit-input");
+    //     inputBox.focus();
+    //
+    //     // 엔터 입력 시 처리
+    //     inputBox.keypress(function (e) {
+    //         if (e.which === 13) { // Enter key
+    //             let newName = inputBox.val().trim();
+    //
+    //             if (newName === "") {
+    //                 // 입력값이 없으면 원래 상태로 복구
+    //                 $(this).parent().text(originalName);
+    //                 return;
+    //             }
+    //
+    //             if (newName !== originalName) {
+    //                 // AJAX 요청 보내기
+    //                 $.ajax({
+    //                     url: '/WordBook/updateTitle',
+    //                     method: 'POST',
+    //                     data: {
+    //                         wordBookId: wordbookId,
+    //                         newTitle: newName
+    //                     },
+    //                     success: (response) => {
+    //                         if (response.success) {
+    //                             this.selectedWordBook.title = newName;
+    //                             $('.wordbook-card[data-wordbook-id="' + this.selectedWordBook.id + '"] h5').text(newName);
+    //                             this.updateModalUI();
+    //                         } else {
+    //                             alert('제목 변경에 실패했습니다.');
+    //                         }
+    //                     },
+    //                     error: () => {
+    //                         alert('제목 변경 중 오류가 발생했습니다.');
+    //                     }
+    //                 });
+    //             } else {
+    //                 // 변경이 없으면 원래 상태로 복구
+    //                 $(this).parent().text(originalName);
+    //             }
+    //         }
+    //     });
+    // });
+
+    $(".modify-btn").click(function () {
+        let li = $(this).closest("li");
+        let span = li.find(".wordbook-name");
+        let originalName = span.text().trim();
+        let wordbookId = li.find("input[type='hidden']").val();
+        let modifyBtn = $(this); // 수정 버튼
+
+        // 이미 input이 있으면 중복 생성 방지
+        if (li.find(".edit-input").length) return;
+
+        // 수정 버튼 숨기기
+        modifyBtn.hide();
+
+        // 텍스트 박스로 변경
+        let inputBox = $(`<input type="text" class="edit-input" value="${originalName}">`);
+        span.replaceWith(inputBox);
+        inputBox.focus();
+
+        // 엔터 또는 포커스 아웃 시 변경 처리 함수
+        function updateTitle() {
+            let newName = inputBox.val().trim();
+
+            if (newName === "") {
+                // 입력값이 없으면 원래 상태로 복구
+                inputBox.replaceWith(`<span class="wordbook-name">${originalName}</span>`);
+                modifyBtn.show();
+                return;
+            }
+
+            if (newName !== originalName) {
+                // AJAX 요청 보내기
+                $.ajax({
+                    url: '/WordBook/updateTitle',
+                    method: 'POST',
+                    data: {
+                        wordBookId: wordbookId,
+                        newTitle: newName
+                    },
+                    success: (response) => {
+                        if (response.success) {
+                            inputBox.replaceWith(`<span class="wordbook-name">${newName}</span>`);
+                        } else {
+                            alert('제목 변경에 실패했습니다.');
+                            inputBox.replaceWith(`<span class="wordbook-name">${originalName}</span>`);
+                        }
+                        modifyBtn.show(); // 수정 버튼 다시 보이기
+                    },
+                    error: () => {
+                        alert('제목 변경 중 오류가 발생했습니다.');
+                        inputBox.replaceWith(`<span class="wordbook-name">${originalName}</span>`);
+                        modifyBtn.show(); // 수정 버튼 다시 보이기
+                    }
+                });
+            } else {
+                // 변경이 없으면 원래 상태로 복구
+                inputBox.replaceWith(`<span class="wordbook-name">${originalName}</span>`);
+                modifyBtn.show();
+            }
+        }
+
+        // 엔터 입력 시 변경
+        inputBox.keypress(function (e) {
+            if (e.which === 13) { // Enter key
+                updateTitle();
+            }
+        });
+
+        // 포커스 아웃 시 변경
+        inputBox.blur(function () {
+            updateTitle();
+        });
+
+        // 입력창 외부 클릭 시 원래 값으로 복구
+        inputBox.blur(function () {
+            let newName = inputBox.val().trim();
+            if (newName === originalName || newName === "") {
+                inputBox.replaceWith(`<span class="wordbook-name">${originalName}</span>`);
+                modifyBtn.show(); // 수정 버튼 다시 보이기
+            }
+        });
+    });
+
+
+
     // [ 오른쪽 섹션 ]
     let isAllChecked = false; // 전체 선택 상태를 추적
 

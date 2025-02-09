@@ -21,7 +21,7 @@ pytesseract.pytesseract.tesseract_cmd = r"/opt/anaconda3/envs/pydatavenv/bin/tes
 genai.configure(api_key=Config.GOOGLE_API_KEY)
 system_instruction = (
                         f"단어를 json으로 만들 때 관사, be 동사, 인칭 대명사, 지시 대명사, 고유 명사(사람 이름, 회사 이름 등)는 제외해주세요."
-                        f"중복된 단어는 제거하고, 최소 1개에서 최대 200개의 단어를 소문자로 보여주세요."
+                        f"중복된 단어는 무조건 꼭 제거하고, 최소 1개에서 최대 200개의 단어를 소문자로 보여주세요."
                         f"jsonArray중 json데이터의 key는 ""단어"", ""뜻"" 한개만 오고, key가 ""단어""인 value에는 영어단어가, key가 ""뜻""인 value에는 품사와 단어뜻을 넣어주세요."
                         f"뜻은 무조건 한국어입니다 뜻 앞에 품사의 영어약어도 함께 넣어주세요., json데이터의 key도 한글로 작성해 주세요"
                         f"결과에는 어떠한 말도 넣지 말고 json데이터만 반환해 주세요"
