@@ -303,41 +303,164 @@ $(document).ready(function () {
     });
     // 버튼 ID와 해당하는 API 엔드포인트를 매핑
     const pageMapping = {
-        'btnTest': 'Test',
-        'btnWrite': 'Writing',
-        'btnNews': 'News'
+        'btnTest': 'wordTest',
+        'btnWrite': 'novelMaking',
+        'btnNews': 'newsRecommendation'
     };
 
+    // 배열을 랜덤하게 섞는 함수 추가
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
 // 컨텐츠 버튼 공통 로직을 처리하는 함수
-    function contentButtonClick(pageType,selectedWordList){
-        if (!selectedWordList || selectedWordList.length === 0) {
+    function contentButtonClick(pageType) {
+        if (!selectedWords || selectedWords.size === 0) {
             alert('선택된 단어가 없습니다.');
             return;
         }
-        // 테스트의 경우 특별 처리
-        if (pageType === 'Test' && selectedWordList.length < 20) {
-            alert('테스트를 진행할 시 단어를 20개 이상 선택하셔야 합니다.');
-            return;
+
+        // 선택된 단어들의 데이터 확인
+        console.log('Selected Words Map:', selectedWords);
+
+        // selectedWords Map에서 데이터 추출 및 형식 변환
+        let selectedWordsArray = Array.from(selectedWords.values()).map(word => ({
+            word: word.word,
+            meaning: word.meaning,
+            type: word.type,
+            example: word.example
+        }));
+
+        console.log('Converted Words Array(선택된 단어 데이터):', selectedWordsArray);
+
+        // 컨텐츠: 테스트 페이지
+        if (pageType === 'wordTest') {
+            // 20개 단어 체크
+            if (selectedWords.size < 20) {
+                alert('테스트를 진행하려면 단어를 20개 이상 선택해야 합니다.');
+                return;
+            }
+
+            // 20개 이상 선택된 경우 랜덤으로 20개만 선택
+            if (selectedWordsArray.length > 20) {
+                selectedWordsArray = shuffleArray(selectedWordsArray).slice(0, 20);
+            }
+
+            // 테스트 유형 선택 모달 표시(영어 -> 한글, 한글 -> 영어)
+            $('#testTypeModal').modal('show');
+
+            // 테스트 유형 선택 버튼 이벤트 핸들러
+            $('.test-type-btn').off('click').on('click', function() {
+                const testType = $(this).data('test-type');
+                const finalWordsArray = selectedWordsArray; // 클로저를 통해 접근
+
+                if (!confirm("테스트를 시작하시겠습니까?")) {
+                    return;
+                }
+
+                // 테스트 데이터 준비
+                const requestData = {
+                    words: finalWordsArray.map(word => ({
+                        word: word.word,
+                        meaning: word.meaning,
+                        type: word.type,
+                        example: word.example
+                    })),
+                    test_type: testType
+                };
+
+                // 테스트 생성 API 호출
+                $.ajax({
+                    url: '/contents/wordTest/generate-test',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function(response) {
+                        if (response && response.questions) {
+                            // 테스트 데이터를 세션 스토리지에 저장
+                            const testData = {
+                                questions: response.questions,
+                                originalWords: finalWordsArray // 원본 단어 데이터도 저장
+                            };
+                            // 세션 스토리지에 데이터 저장
+                            sessionStorage.setItem('testData', JSON.stringify(testData));
+                            sessionStorage.setItem('testType', requestData.test_type);
+
+                            // 테스트 페이지로 이동
+                            window.location.href = '/contents/wordTest/wordTest';
+                        } else {
+                            alert('테스트 생성에 실패했습니다: 잘못된 응답 형식');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText);
+                        console.error('Status:', status);
+                        console.error('Error:', error);
+                        alert('테스트 생성에 실패했습니다.');
+                    }
+                });
+            });
         }
-        const wordBookId = $('#wordBookId').val();
 
-        // 선택된 단어 리스트를 세션 스토리지에 저장
-        sessionStorage.setItem('selectedWords', JSON.stringify(selectedWordList));
+        // 컨텐츠: 뉴스 추천 페이지
+        else if (pageType === 'newsRecommendation') {
+            // 선택된 단어가 1개인지 확인
+            if (selectedWords.size !== 1) {
+                alert('뉴스 추천을 위해서는 단어를 1개만 선택해주세요.');
+                return;
+            }
 
-        // 페이지 이동
-        window.location.href = '/WordBook/' + pageType + '?wordBookId=' + wordBookId;
+            // 디버깅을 위한 콘솔 로그 추가
+            console.log('Converted Words Array(선택된 단어 데이터): ', selectedWordsArray);
+            console.log('Data to be stored in session storage(세션 스토리지에 저장될 데이터): ', JSON.stringify(selectedWordsArray));
+
+            // 세션 스토리지에 선택된 단어 데이터 저장
+            sessionStorage.setItem('selectedWords', JSON.stringify(selectedWordsArray));
+            // 뉴스 추천 페이지로 이동
+            window.location.href = '/contents/news/newsRecommendation';
+        }
+
+        // 작문 페이지 이동하는 경우
+        else if (pageType === 'novelMaking'){
+            const wordBookId = $('#wordBookId').val();
+
+            // 디버깅을 위한 로그 추가
+            console.log('WordBook ID:', wordBookId);
+            console.log('Page Type:', pageType);
+
+            // 다른 페이지 타입의 경우
+            if (!wordBookId) {
+                alert('단어장 ID가 없습니다.');
+                return;
+            }
+
+            console.log('Converted Words Array(선택된 단어 데이터):', selectedWordsArray);
+            console.log('Data to be stored in session storage(세션 스토리지에 저장될 데이터): ', JSON.stringify(selectedWordsArray));
+
+            // 세션 스토리지에 데이터 저장
+            sessionStorage.setItem('selectedWords', JSON.stringify(selectedWordsArray));
+            //window.location.href = `/WordBook/${pageType}?wordBookId=${wordBookId}`;
+            //window.location.href = '/WordBook/' + pageType + '?wordBookId=' + $('#wordBookId').val();
+            // URL 생성 및 이동
+            const url = '/contents/novel/novelMaking?wordBookId=' + wordBookId;
+            console.log('Redirecting to:', url);
+            window.location.href = url;
+        }
     }
-    // 버튼들에 이벤트 리스너 등록
+
+// 버튼들에 이벤트 리스너 등록
     $('#btnTest, #btnWrite, #btnNews').on('click', function() {
         const buttonId = $(this).attr('id');
         const pageType = pageMapping[buttonId];
-        const selectedWordList = Array.from(selectedWords.keys());
 
-        if (buttonId === 'btnTest' && !confirm("테스트를 시작하시겠습니까?")) {
-            return;
-        }
+        console.log('Button clicked:', buttonId);
+        console.log('Mapped page type:', pageType);
 
-        contentButtonClick(pageType, selectedWordList);
+        contentButtonClick(pageType);
     });
 
     $('#sortSelect').on('change', function () {
@@ -392,6 +515,7 @@ $(document).ready(function () {
         rowHtml += '</tr>';
         tableBody.append(rowHtml);
     }
+
     function escapeHtml(unsafe) {
         return unsafe
             .replace(/&/g, "&amp;")
@@ -439,7 +563,7 @@ $(document).ready(function () {
             const newTitle = $('#newTitle').val().trim();
 
             if (!validateTitle(newTitle)) {
-                // alert('제목은 1-50자의 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
+                alert('제목은 1-50자의 한글, 영문, 숫자와 일부 특수문자(,.()-_)만 사용할 수 있습니다.');
                 return;
             }
 
@@ -472,6 +596,7 @@ $(document).ready(function () {
                 $titleText.text(currentTitle);
             }
         });
+
         // 취소 버튼 클릭 시
         $('#btnCancelEdit').on('click', function() {
             $titleText.text(currentTitle);

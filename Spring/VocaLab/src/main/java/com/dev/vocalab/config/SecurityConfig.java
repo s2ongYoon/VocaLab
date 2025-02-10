@@ -15,12 +15,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +35,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +88,17 @@ public class SecurityConfig {
                 .failureHandler((request, response, exception) -> {
                     // 로그인 실패 시 처리
                     System.out.println("로그인 실패: " + exception.getMessage());
-                    response.sendRedirect("/login?error=true&message=" + exception.getMessage());
+                    String errorMessage = "";
+
+                    if (exception instanceof UsernameNotFoundException) {
+                        errorMessage = URLEncoder.encode("존재하지 않는 아이디입니다.", "UTF-8");
+                    } else if (exception instanceof BadCredentialsException) {
+                        errorMessage = URLEncoder.encode("올바르지 않은 비밀번호입니다.", "UTF-8");
+                    } else {
+                        errorMessage = URLEncoder.encode("로그인에 실패했습니다.", "UTF-8");
+                    }
+
+                    response.sendRedirect("/login?error=true&message=" + errorMessage);
                 })
                 //.failureUrl("/login?error") // 얘는 간단한 리다이렉트만
                 .permitAll());
@@ -151,6 +167,30 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+
+    // 로그인과정에서 /login-process를 거치지 않고 수행. 인증과정에서 예외가 발생할 시 failureHandler 호출
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider() {
+            @Override
+            protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                          UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+                if (authentication.getCredentials() == null) {
+                    throw new BadCredentialsException("비밀번호를 입력해주세요.");
+                }
+
+                String presentedPassword = authentication.getCredentials().toString();
+                if (!passwordEncoder().matches(presentedPassword, userDetails.getPassword())) {
+                    throw new BadCredentialsException("올바르지 않은 비밀번호입니다.");
+                }
+            }
+        };
+
+        provider.setUserDetailsService(customUsersDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);  // 이 설정이 중요합니다!
+        return provider;
     }
 
     // 커스텀 로그아웃 성공 핸들러

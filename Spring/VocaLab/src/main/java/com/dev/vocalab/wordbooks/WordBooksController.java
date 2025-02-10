@@ -40,6 +40,8 @@ public class WordBooksController {
         if (userId == null) {
             return "redirect:/login";
         }
+        // 사용자 정보를 세션에 추가
+        AuthenticationUtil.addUserSessionToModel(model);
         // 사용자 정보와 단어장 목록 조회
         UsersEntity user = usersRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
@@ -63,7 +65,8 @@ public class WordBooksController {
             if (currentUserId == null) {
                 return "redirect:/login";
             }
-
+            // 사용자 정보를 세션에 추가
+            AuthenticationUtil.addUserSessionToModel(model);
             // 단어장 정보 조회 및 소유자 확인
             Optional<WordBooksEntity> wordbook = wordBooksRepository.findById(wordBookId);
             if (wordbook.isEmpty() || !wordbook.get().getUserId().equals(currentUserId)) {

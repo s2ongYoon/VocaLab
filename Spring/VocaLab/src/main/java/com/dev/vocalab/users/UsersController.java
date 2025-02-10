@@ -8,12 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -119,6 +117,73 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("회원 탈퇴 처리 중 오류가 발생했습니다.");
         }
+    }
+
+    // 아이디 찾기 페이지 이동
+    @GetMapping("/findId")
+    public String findIdPage() {
+        return "users/findId";
+    }
+
+    // 아이디 찾기 - 인증번호 발송
+    @PostMapping("/api/findId/send-verification")
+    @ResponseBody
+    public ResponseEntity<?> sendVerificationForFindId(@RequestBody Map<String, String> request) {
+        String userEmail = request.get("email");
+
+        try {
+            return usersService.sendVerificationForFindId(userEmail);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false,
+                            "message", e.getMessage()));
+        }
+    }
+
+    // 아이디 찾기 - 인증번호 확인
+    @PostMapping("/api/findId/verify")
+    @ResponseBody
+    public ResponseEntity<?> verifyCodeForFindId(@RequestBody Map<String, String> request) {
+        String verificationId = request.get("verificationId");
+        String code = request.get("code");
+        String email = request.get("email");
+
+        try {
+            return usersService.verifyCodeForFindId(verificationId, code, email);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false,
+                            "message", e.getMessage()));
+        }
+    }
+
+    // 비밀번호 찾기 페이지 이동
+    @GetMapping("/findPassword")
+    public String findPasswordPage() {
+        return "users/findPassword";
+    }
+
+    @PostMapping("/api/findPassword/send-verification")
+    public ResponseEntity<?> sendVerificationForFindPassword(@RequestBody Map<String, String> request) {
+        String userId = request.get("userId");
+        String email = request.get("email");
+        return usersService.sendVerificationForFindPassword(userId, email);
+    }
+
+    @PostMapping("/api/findPassword/verify")
+    public ResponseEntity<?> verifyCodeForFindPassword(@RequestBody Map<String, String> request) {
+        String verificationId = request.get("verificationId");
+        String code = request.get("code");
+        String userId = request.get("userId");
+        String email = request.get("email");
+        return usersService.verifyCodeForFindId(verificationId, code, email);
+    }
+
+    @PostMapping("/api/findPassword/change")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> request) {
+        String userId = request.get("userId");
+        String newPassword = request.get("newPassword");
+        return usersService.changePassword(userId, newPassword);
     }
 
 }

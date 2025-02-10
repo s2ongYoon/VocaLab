@@ -14,6 +14,10 @@
     <script src="/js/wordList.js"></script>
 </head>
 <body>
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
 <div class="container-fluid">
     <input type="hidden" id="wordBookId" value="<%= request.getParameter("wordBookId") %>" />
     <div class="row">
@@ -66,7 +70,10 @@
         </div>
     </div>
 </div>
-
+<%-- footer배너 삽입 --%>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
+</div>
 <!-- 단어 상세 정보 모달 -->
 <div class="modal fade" id="wordDetailModal" tabindex="-1" aria-labelledby="wordDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -104,6 +111,29 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="testTypeModal" tabindex="-1" role="dialog" aria-labelledby="testTypeModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testTypeModalLabel">테스트 유형 선택</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid gap-3">
+                    <button class="btn btn-primary test-type-btn" data-test-type="meaning">
+                        1. 뜻 맞추기 테스트 (영어 → 한글)
+                    </button>
+                    <button class="btn btn-primary test-type-btn" data-test-type="word">
+                        2. 단어 맞추기 테스트 (한글 → 영어)
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
             </div>
         </div>
     </div>

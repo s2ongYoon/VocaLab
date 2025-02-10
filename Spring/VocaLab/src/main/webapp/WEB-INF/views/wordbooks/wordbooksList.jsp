@@ -45,6 +45,10 @@
     </style>
 </head>
 <body>
+<%-- top배너 삽입 --%>
+<div id="banner_top" role="banner">
+    <%@ include file="../banners/top_left.jsp" %>
+</div>
 <div class="container py-4">
     <h1>${userNickname}님의 단어장 목록</h1>
 
@@ -104,18 +108,15 @@
                     <button class="btn btn-primary" id="btnMoveWordbook">단어장 이동</button>
                     <button class="btn btn-danger" id="btnDeleteWordbook">단어장 삭제</button>
                     <button class="btn btn-warning text-dark" id="btnToggleFavorite"></button>
-                    <button class="btn btn-secondary" id="btnGoWriting">작문 이동</button>
-                    <button class="btn btn-secondary" id="btnGoNews">뉴스 이동</button>
-                    <button class="btn btn-secondary" id="btnGoTest">테스트 이동</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="banner_bottom">
+    <%@ include file="../banners/bottom.jsp" %>
+</div>
 </body>
 </html>
-<script>
-</script>
-
 </body>
 </html>

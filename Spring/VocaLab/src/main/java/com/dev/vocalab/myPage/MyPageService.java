@@ -38,7 +38,7 @@ public class MyPageService {
     public List<CompileDTO> getCompileRecordList(String userId) {
         System.out.println("MyPageService - getCompileRecordList");
 
-        List<CompileRecordEntity> recordList = compileRecordRepository.findByUserId(userId);
+        List<CompileRecordEntity> recordList = compileRecordRepository.findByUserIdOrderByCreatedAtDesc(userId);
         System.out.println("recordList: " + recordList);
 
         // < 일자 계산 >

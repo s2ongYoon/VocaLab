@@ -88,4 +88,43 @@ $(document).ready(function() {
         }
 
     });
+    //modify.jsp
+    // 회원탈퇴 버튼 클릭 이벤트
+    $(".withdraw").click(function (e) {
+        e.preventDefault();
+
+        $(".modal-overlay, #withdrawModal").fadeIn();
+
+    });
+
+    // 모달에서 확인 버튼 클릭
+    $("#confirmWithdraw").click(function () {
+        let userInput = $("#withdrawInput").val();
+        if(userInput === "회원탈퇴 하겠습니다") {
+            if (confirm("정말 회원탈퇴를 진행 하시겠습니까?")) {
+                // 올바르게 입력하면 DELETE 요청 보내기
+                $.ajax({
+                    url: "/delete", // 실제 컨트롤러 URL에 맞게 변경하세요.
+                    type: "DELETE",
+                    success: function (response) {
+                        alert("회원탈퇴가 완료되었습니다.");
+                        location.href = "/"; // 탈퇴 후 메인 페이지로 이동
+                    },
+                    error: function (error) {
+                        alert("회원탈퇴 요청 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+        } else {
+            alert("입력 내용이 정확하지 않습니다. 다시 입력해주세요.");
+        }
+    });
+
+    // 취소 버튼 클릭 시 모달 닫기
+    $("#cancelWithdraw").click(function () {
+        $(".modal-overlay, #withdrawModal").fadeOut();
+    });
+
 });
+
+

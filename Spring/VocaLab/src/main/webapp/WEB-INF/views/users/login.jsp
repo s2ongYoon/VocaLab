@@ -14,6 +14,7 @@
     <link href="/css/login.css" rel="stylesheet">
 </head>
 <body>
+<div class="nav">
 <div class="login-wrap">
     <div class="login-header">
         <a href="/" class="logo-link">
@@ -41,9 +42,9 @@
             </form>
 
             <div class="login-util">
-                <a href="/find-id" class="util-link">아이디 찾기</a>
+                <a href="/findId" class="util-link">아이디 찾기</a>
                 <span class="util-divider">|</span>
-                <a href="/find-password" class="util-link">비밀번호 찾기</a>
+                <a href="/findPassword" class="util-link">비밀번호 찾기</a>
                 <span class="util-divider">|</span>
                 <a href="/register" class="util-link">회원가입</a>
             </div>
