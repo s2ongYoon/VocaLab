@@ -12,12 +12,7 @@
 
 <b>📌배포 주소</b> : https://vocalab.21v.in/
 
-<b>📌시연 영상</b> : <!-- 예시 [![Video Label](http://img.youtube.com/vi/1rwYc-_ZuvE/0.jpg)](https://youtu.be/1rwYc-_ZuvE) --> <br/>
-
-## 프로젝트 수행 인원
- 👨‍💻 이한빈(팀장) : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/Dev21V)[<img alt="Tistory LINK" src="https://img.shields.io/badge/tistory-eb531f?style=flat&logo=tistory&logoColor=white"/>](https://dev21v.tistory.com/) <br />
- 🧑‍💻 박홍석 : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/Seok7975)[<img alt="Velog LINK" src="https://img.shields.io/badge/velog-20C997?style=flat&logo=velog&logoColor=white"/>](https://velog.io/@seok7975/posts)<br />
- 👩‍💻 윤혜성 : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/s2ongYoon)[<img alt="Velog LINK" src="https://img.shields.io/badge/velog-20C997?style=flat&logo=velog&logoColor=white"/>](https://velog.io/@comete_yoon/posts)<br />
+## 프로젝트 수행 인원 3명
 
 ## 개발 환경
 - 개발 언어 : <img alt="Python" src ="https://img.shields.io/badge/Python-3776AB.svg?&style=flat&logo=Python&logoColor=white"/> <img alt="JAVA" src="https://img.shields.io/badge/Java-007396?style=flat&logo=oracle&logoColor=white" /> <img alt="JSP" src="https://img.shields.io/badge/JSP-FF7200?style=flat&logo=eclipseide&logoColor=white"/> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=JavaScript&logoColor=black" /> <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white"/> <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=CSS3&logoColor=white" />
@@ -39,42 +34,15 @@
 - UI : <img src="https://img.shields.io/badge/Figma-F05032?style=flat&logo=figma&logoColor=white" />
 
 - 기타: <img src="https://img.shields.io/badge/Gemini API-8E75B2?style=flat&logo=google gemini&logoColor=white" />
-## VocaLab 주요 기능
+## VocaLab 담당 기능
 
-### 회원가입/회원탈퇴
-> - 
-> - 
-> - 
-### 아이디/비밀번호 찾기
-> - 
-> - 
-> - 
-### 로그인
-> - 
-> - 
-> - 
+
 ### 메인
+> - python - flask, teseracte
+> - gemini를 활용해 단어 추출 ㅁ
 > - 
-> - 
-> - 
-### 단어
-> - 
-> - 
-> - 
-### 단어장
-> - 
-> - 
-> - 
-### 컨텐츠
-> - 
-> - 
-> - 
+
 ### 마이페이지
 > - 
 > - 
 > - 
-### 게시판
-> - 
-> - 
-> - 
-
