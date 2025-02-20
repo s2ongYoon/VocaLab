@@ -12,7 +12,18 @@
 
 <b>📌배포 주소</b> : https://vocalab.21v.in/
 
-## 프로젝트 수행 인원 3명
+<b>📌시연 영상</b> : <!-- 예시 [![Video Label](http://img.youtube.com/vi/1rwYc-_ZuvE/0.jpg)](https://youtu.be/1rwYc-_ZuvE) --> <br/>
+
+## 프로젝트 수행 인원
+ 👨‍💻 이한빈(팀장) : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/Dev21V)[<img alt="Tistory LINK" src="https://img.shields.io/badge/tistory-eb531f?style=flat&logo=tistory&logoColor=white"/>](https://dev21v.tistory.com/) <br />
+ 🧑‍💻 박홍석 : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/Seok7975)[<img alt="Velog LINK" src="https://img.shields.io/badge/velog-20C997?style=flat&logo=velog&logoColor=white"/>](https://velog.io/@seok7975/posts)<br />
+ 👩‍💻 윤혜성 : [<img alt="GITHUB LINK" src="https://img.shields.io/badge/github-181717?style=flat&logo=github&logoColor=white"/>](https://github.com/s2ongYoon)[<img alt="Velog LINK" src="https://img.shields.io/badge/velog-20C997?style=flat&logo=velog&logoColor=white"/>](https://velog.io/@comete_yoon/posts)<br />
+
+## ERD
+<img width="630" alt="스크린샷 2025-02-19 오후 8 47 10" src="https://github.com/user-attachments/assets/df27fba5-b0d7-48b4-b6c1-1b63bdca69a2" />
+
+## 시스템 아키텍처
+<img width="1454" alt="스크린샷 2025-02-19 오후 8 49 34" src="https://github.com/user-attachments/assets/a7e9824e-ae40-44f8-b6b0-4ba4ad6f7de2" />
 
 ## 개발 환경
 - 개발 언어 : <img alt="Python" src ="https://img.shields.io/badge/Python-3776AB.svg?&style=flat&logo=Python&logoColor=white"/> <img alt="JAVA" src="https://img.shields.io/badge/Java-007396?style=flat&logo=oracle&logoColor=white" /> <img alt="JSP" src="https://img.shields.io/badge/JSP-FF7200?style=flat&logo=eclipseide&logoColor=white"/> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=JavaScript&logoColor=black" /> <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white"/> <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=CSS3&logoColor=white" />
@@ -34,15 +45,42 @@
 - UI : <img src="https://img.shields.io/badge/Figma-F05032?style=flat&logo=figma&logoColor=white" />
 
 - 기타: <img src="https://img.shields.io/badge/Gemini API-8E75B2?style=flat&logo=google gemini&logoColor=white" />
-## VocaLab 담당 기능
 
+## VocaLab 주요 기능
 
+### 회원가입
+> - 사용자는 아이디, 비밀번호, 닉네임, 이메일, 생년월일, 성별을 이용해 회원가입할 수 있다.
+> - 사용자는 구글, 네이버의 소셜 정보를 활용해 회원가입할 수 있다.
+### 아이디/비밀번호 찾기
+> - 사용자는 이메일과 이름을 이용해 아이디 찾기를 진행할 수 있다.
+> - 사용자는 아이디와 이메일을 이용해 새비밀번호를 등록할 수 있다.
+### 로그인
+> - 가입한 아이디와 비밀번호를 사용해 로그인할 수 있다.
+> - 가입한 소셜 아이디를 사용해 로그인할 수 있다.
 ### 메인
-> - python - flask, teseracte
-> - gemini를 활용해 단어 추출 ㅁ
-> - 
-
+> - 다양한 입력 소스를 지원하여 단어를 추출할 수 있다.
+> - 단어장을 새로 생성하고, 조회, 수정, 삭제할 수 있다. 
+> - 선택한 단어를 원하는 단어장에 넣을 수 있다.
+### 단어
+> - 단어장 내부에서 단어를 조회할 수 있다.
+> - 선택한 단어로 컨텐츠를 생성할 수 있다.
+> - 단어를 관리할 수 있다.
+### 단어장
+> - 단어장을 조회할 수 있다.
+> - 단어장을 삭제 수정할 수 있다.
+### 컨텐츠
+> - 컨텐츠는 모두 생성형 AI를 활용하여 생성된다.
+> - 선택한 단어를 이용해 뉴스를 추천 받고 새로운 문장으로 단어를 학습할 수 있다. 
+> - 선택한 단어들로 단어/뜻 맞추기 테스트를 진행할 수 있다.
+> - 진행한 테스트의 정답, 오답, 미응답을 확인하여 학습할 수 있다.
+> - 선택한 단어를 활용한 소설을 만들고 사용된 단어가 어떤 문장에서 쓰였는지 확인하며 학습할 수 있다.
 ### 마이페이지
-> - 
-> - 
-> - 
+> - 사용자가 단어를 추출했던 기록을 조회하고, 기록을 이용하여 다시 한번 더 단어를 추출하고 단어장을 새성할 수 있다.
+> - 회원정보를 조회하고 수정, 탈퇴할 수있다.
+### 고객센터
+> - 사용자는 공지사항을 조회할 수 있고, 관리자는 공지사항을 조회, 수정, 삭제, 생성할 수 있다.
+> - 사용자는 1:1 게시판에 질문을 등록 하고, 자신이 등록한 질문만 조회 가능하다.
+> - 관리자는 사용자들이 남긴 1:1 게시판의 모든 질문을 조회 가능하고, 답을 남길 수 있다.
+> - 사용자는 자주 묻는 질문을 조회할 수있다.
+> - 관리자는 자주 묻는 질문을 조회, 생성, 수정, 삭제할 수있다.
+
